@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تعدين العملات الرقمية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- إضافة Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             box-sizing: border-box;
@@ -14,20 +19,21 @@
         }
         
         :root {
-            --primary: #00d4ff;
-            --secondary: #0099cc;
-            --accent: #ff6b6b;
-            --dark: #0a1931;
-            --darker: #051129;
-            --light: #f8f9fa;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.12);
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #ef4444;
+            --dark: #f8fafc;
+            --darker: #e2e8f0;
+            --light: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(226, 232, 240, 0.8);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         
         body {
-            background: linear-gradient(135deg, var(--darker), var(--dark));
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
             color: var(--light);
             min-height: 100vh;
             padding: 10px;
@@ -37,10 +43,10 @@
         .container {
             max-width: 100%;
             margin: 0 auto;
-            background: rgba(5, 17, 41, 0.8);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             padding: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow);
             border: 1px solid var(--card-border);
         }
         
@@ -54,7 +60,6 @@
             color: var(--primary);
             margin-bottom: 8px;
             font-size: 1.8rem;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -67,6 +72,62 @@
             max-width: 100%;
             margin: 0 auto;
             line-height: 1.4;
+        }
+        
+        .user-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .user-details {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--light);
+        }
+        
+        .user-id {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-top: 2px;
+        }
+        
+        .telegram-info {
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--primary);
         }
         
         .stats-section {
@@ -82,6 +143,7 @@
             padding: 12px 8px;
             text-align: center;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
         
         .stat-card i {
@@ -108,6 +170,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
         
         .crypto-display {
@@ -135,7 +198,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -145,29 +208,13 @@
             margin: 0 auto 15px;
         }
         
-        .mine-button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(45deg);
-            transition: all 0.5s;
-        }
-        
         .mine-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(0, 212, 255, 0.7);
+            box-shadow: 0 0 25px rgba(37, 99, 235, 0.5);
         }
         
         .mine-button:active {
             transform: scale(0.95);
-        }
-        
-        .mine-button:active::before {
-            transform: rotate(45deg) scale(1.2);
         }
         
         .mine-button i {
@@ -187,6 +234,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
         
         .section-header {
@@ -215,7 +263,7 @@
         }
         
         .miner-card {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 8px;
             padding: 10px;
             text-align: center;
@@ -228,7 +276,8 @@
         }
         
         .miner-card:hover {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
         }
         
         .miner-icon {
@@ -265,6 +314,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
         
         .upgrades-grid {
@@ -274,7 +324,7 @@
         }
         
         .upgrade-card {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 8px;
             padding: 12px;
             transition: all 0.3s;
@@ -286,7 +336,8 @@
         }
         
         .upgrade-card:hover {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
         }
         
         .upgrade-header {
@@ -344,14 +395,16 @@
             justify-content: center;
             gap: 6px;
             font-size: 0.8rem;
+            box-shadow: var(--shadow);
         }
         
         button:hover:not(:disabled) {
             background: linear-gradient(135deg, var(--secondary), var(--primary));
+            transform: translateY(-1px);
         }
         
         button:disabled {
-            background: #7f8c8d;
+            background: #94a3b8;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -363,11 +416,12 @@
             padding: 12px;
             margin-bottom: 15px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
         
         .level-progress {
             height: 16px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(226, 232, 240, 0.8);
             border-radius: 8px;
             overflow: hidden;
             margin: 8px 0;
@@ -389,27 +443,12 @@
             overflow: hidden;
         }
         
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        
         .achievements-section {
             background: var(--card-bg);
             border-radius: 12px;
             padding: 15px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
         
         .achievements-grid {
@@ -419,7 +458,7 @@
         }
         
         .achievement-card {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 6px;
             padding: 10px 5px;
             text-align: center;
@@ -434,7 +473,7 @@
         
         .achievement-card.unlocked {
             opacity: 1;
-            background: rgba(46, 204, 113, 0.1);
+            background: rgba(16, 185, 129, 0.1);
             border-color: var(--success);
         }
         
@@ -454,7 +493,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
+            background: white;
             color: var(--primary);
             padding: 10px 15px;
             border-radius: 6px;
@@ -462,7 +501,7 @@
             transition: opacity 0.3s;
             z-index: 100;
             border-left: 4px solid var(--primary);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow);
             font-size: 0.9rem;
             max-width: 90%;
             text-align: center;
@@ -472,6 +511,46 @@
             opacity: 1;
         }
         
+        .save-indicator {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: var(--success);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .save-indicator.show {
+            opacity: 1;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* تحسينات للشاشات الصغيرة جدًا */
         @media (max-width: 360px) {
             .stats-section {
@@ -548,6 +627,27 @@
             <p class="subtitle">إبدأ رحلتك في عالم التعدين واصبح أغنى شخص في العالم الافتراضي!</p>
         </header>
         
+        <!-- قسم معلومات المستخدم -->
+        <div class="user-section" id="userSection">
+            <div class="section-header">
+                <i class="fab fa-telegram"></i>
+                <h2>حساب التليجرام</h2>
+            </div>
+            <div class="user-info" id="userInfo">
+                <div class="user-avatar" id="userAvatar">
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">جاري تحميل البيانات...</div>
+                    <div class="user-id" id="userId">ID: ...</div>
+                </div>
+            </div>
+            <div class="telegram-info" id="telegramInfo">
+                <i class="fab fa-telegram"></i>
+                <span>مسجل عبر بوت التليجرام</span>
+            </div>
+        </div>
+        
         <div class="stats-section">
             <div class="stat-card">
                 <i class="fas fa-coins"></i>
@@ -604,7 +704,7 @@
                 <div class="click-value" id="clickValue">+1 عملة</div>
             </button>
             
-            <p style="font-size: 0.9rem;">إجمالي العملات المعدنة: <span id="totalMined">0</span></p>
+            <p style="font-size: 0.9rem;">إجمالي العملات المعدنة: <span id="totalMinedDisplay">0</span></p>
         </div>
         
         <div class="miners-section">
@@ -732,8 +832,23 @@
     </div>
     
     <div class="message" id="message"></div>
+    <div class="save-indicator" id="saveIndicator">تم الحفظ</div>
 
     <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBX8v0qIVjG-Z46fVDeEUDKcPxa_FQF9Qc",
+            authDomain: "bnak-belaiba.firebaseapp.com",
+            projectId: "bnak-belaiba",
+            storageBucket: "bnak-belaiba.firebasestorage.app",
+            messagingSenderId: "286736432059",
+            appId: "1:286736432059:web:ec1ed4292850f00008229e"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // حالة اللعبة
         const gameState = {
             coins: 0,
@@ -779,7 +894,12 @@
                 tenThousand: false,
                 dataCenter: false,
                 millionaire: false
-            }
+            },
+            
+            // بيانات المستخدم من التليجرام
+            telegramUser: null,
+            userId: null,
+            lastSave: null
         };
 
         // العناصر
@@ -791,9 +911,18 @@
         const nextLevelXPElement = document.getElementById('nextLevelXP');
         const levelProgressElement = document.getElementById('levelProgress');
         const totalMinedElement = document.getElementById('totalMined');
+        const totalMinedDisplayElement = document.getElementById('totalMinedDisplay');
         const cryptoDisplayElement = document.getElementById('cryptoDisplay');
         const mineButton = document.getElementById('mineButton');
         const clickValueElement = document.getElementById('clickValue');
+        
+        // عناصر المستخدم
+        const userInfo = document.getElementById('userInfo');
+        const userName = document.getElementById('userName');
+        const userId = document.getElementById('userId');
+        const userAvatar = document.getElementById('userAvatar');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const telegramInfo = document.getElementById('telegramInfo');
         
         // عناصر المعدنين
         const miner1CostElement = document.getElementById('miner1Cost');
@@ -826,9 +955,13 @@
         const buyCryptoUpgradeBtn = document.getElementById('buyCryptoUpgrade');
         
         const messageElement = document.getElementById('message');
+        const saveIndicator = document.getElementById('saveIndicator');
 
         // تهيئة اللعبة
-        function initGame() {
+        async function initGame() {
+            // محاولة الحصول على بيانات المستخدم من التليجرام
+            await getTelegramUserData();
+            
             updateUI();
             
             // إضافة مستمعي الأحداث
@@ -847,6 +980,122 @@
             
             // تحميل البيانات المحفوظة
             loadGame();
+        }
+
+        // الحصول على بيانات المستخدم من التليجرام
+        async function getTelegramUserData() {
+            try {
+                // في بيئة التليجرام، يمكن الوصول لبيانات المستخدم عبر window.Telegram.WebApp
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const tg = window.Telegram.WebApp;
+                    
+                    // جلب بيانات المستخدم من التليجرام
+                    const user = tg.initDataUnsafe.user;
+                    
+                    if (user) {
+                        gameState.telegramUser = user;
+                        gameState.userId = user.id.toString();
+                        
+                        // تحديث واجهة المستخدم
+                        updateUserInterface(user);
+                        showMessage(`مرحباً ${user.first_name || 'مستخدم التليجرام'}!`);
+                        return;
+                    }
+                }
+                
+                // إذا لم تكن في بيئة التليجرام، استخدام بيانات تجريبية للاختبار
+                await simulateTelegramUser();
+                
+            } catch (error) {
+                console.error('خطأ في جلب بيانات التليجرام:', error);
+                await simulateTelegramUser();
+            }
+        }
+
+        // محاكاة بيانات مستخدم التليجرام للاختبار
+        async function simulateTelegramUser() {
+            const testUser = {
+                id: Math.floor(Math.random() * 1000000),
+                first_name: 'مستخدم',
+                last_name: 'التليجرام',
+                username: 'telegram_user',
+                language_code: 'ar'
+            };
+            
+            gameState.telegramUser = testUser;
+            gameState.userId = testUser.id.toString();
+            
+            updateUserInterface(testUser);
+            showMessage('وضع الاختبار: تم تسجيل الدخول كمستخدم تجريبي');
+        }
+
+        // تحديث واجهة معلومات المستخدم
+        function updateUserInterface(user) {
+            // إخفاء spinner التحميل
+            loadingSpinner.style.display = 'none';
+            
+            // تحديث الاسم
+            const fullName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            userName.textContent = fullName;
+            
+            // تحديث الـ ID
+            userId.textContent = `ID: ${user.id}`;
+            
+            // تحديث الصورة الرمزية
+            userAvatar.textContent = user.first_name ? user.first_name.charAt(0).toUpperCase() : 'U';
+            userAvatar.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+            
+            // إظهار معلومات التليجرام
+            if (user.username) {
+                telegramInfo.innerHTML = `<i class="fab fa-telegram"></i> @${user.username}`;
+            }
+        }
+
+        // حفظ بيانات المستخدم في Firebase
+        async function saveUserData() {
+            if (!gameState.userId) return;
+            
+            try {
+                const userData = {
+                    ...gameState,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                    username: gameState.telegramUser?.username || 'unknown',
+                    first_name: gameState.telegramUser?.first_name || 'مستخدم',
+                    created: gameState.created || new Date().toISOString()
+                };
+                
+                // إزالة بيانات التليجرام الحساسة قبل الحفظ
+                delete userData.telegramUser;
+                
+                await db.collection('users').doc(gameState.userId).set(userData, { merge: true });
+                showSaveIndicator();
+            } catch (error) {
+                console.error('خطأ في حفظ البيانات:', error);
+            }
+        }
+
+        // تحميل بيانات المستخدم من Firebase
+        async function loadUserData() {
+            if (!gameState.userId) return;
+            
+            try {
+                const doc = await db.collection('users').doc(gameState.userId).get();
+                if (doc.exists) {
+                    const userData = doc.data();
+                    // الحفاظ على بيانات التليجرام الأصلية
+                    const telegramUser = gameState.telegramUser;
+                    Object.assign(gameState, userData);
+                    gameState.telegramUser = telegramUser;
+                    updateUI();
+                    updateAchievementsUI();
+                    showMessage('تم تحميل بياناتك من السحابة!');
+                } else {
+                    // إذا كان المستخدم جديداً، احفظ بياناته لأول مرة
+                    saveUserData();
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات:', error);
+            }
         }
 
         // التعدين بالنقر
@@ -1043,6 +1292,7 @@
             xpElement.textContent = Math.floor(gameState.xp);
             nextLevelXPElement.textContent = gameState.nextLevelXP;
             totalMinedElement.textContent = Math.floor(gameState.totalMined);
+            totalMinedDisplayElement.textContent = Math.floor(gameState.totalMined);
             
             // تحديث شريط التقدم
             const progressPercent = (gameState.xp / gameState.nextLevelXP) * 100;
@@ -1094,8 +1344,8 @@
         // عرض رسالة
         function showMessage(text, type = "success") {
             messageElement.textContent = text;
-            messageElement.style.borderLeftColor = type === "error" ? "#ff6b6b" : 
-                                        type === "level" ? "#9b59b6" : "#00d4ff";
+            messageElement.style.borderLeftColor = type === "error" ? "#ef4444" : 
+                                        type === "level" ? "#8b5cf6" : "#2563eb";
             messageElement.classList.add('show');
             
             setTimeout(() => {
@@ -1103,13 +1353,31 @@
             }, 3000);
         }
 
+        // عرض مؤشر الحفظ
+        function showSaveIndicator() {
+            saveIndicator.classList.add('show');
+            setTimeout(() => {
+                saveIndicator.classList.remove('show');
+            }, 2000);
+        }
+
         // حفظ اللعبة
         function saveGame() {
+            // حفظ محلي
             localStorage.setItem('cryptoMinerGame', JSON.stringify(gameState));
+            
+            // حفظ في Firebase
+            saveUserData();
         }
 
         // تحميل اللعبة
         function loadGame() {
+            loadLocalData();
+            loadUserData();
+        }
+
+        // تحميل البيانات المحلية
+        function loadLocalData() {
             const savedGame = localStorage.getItem('cryptoMinerGame');
             if (savedGame) {
                 const parsedGame = JSON.parse(savedGame);
@@ -1119,26 +1387,31 @@
                 updateUI();
                 
                 // تحديث الإنجازات
-                if (gameState.achievements.first100) {
-                    document.getElementById('achievement1').classList.add('unlocked');
-                }
-                if (gameState.achievements.firstMiner) {
-                    document.getElementById('achievement2').classList.add('unlocked');
-                }
-                if (gameState.achievements.level10) {
-                    document.getElementById('achievement3').classList.add('unlocked');
-                }
-                if (gameState.achievements.tenThousand) {
-                    document.getElementById('achievement4').classList.add('unlocked');
-                }
-                if (gameState.achievements.dataCenter) {
-                    document.getElementById('achievement5').classList.add('unlocked');
-                }
-                if (gameState.achievements.millionaire) {
-                    document.getElementById('achievement6').classList.add('unlocked');
-                }
+                updateAchievementsUI();
                 
                 showMessage('تم تحميل اللعبة بنجاح!');
+            }
+        }
+
+        // تحديث واجهة الإنجازات
+        function updateAchievementsUI() {
+            if (gameState.achievements.first100) {
+                document.getElementById('achievement1').classList.add('unlocked');
+            }
+            if (gameState.achievements.firstMiner) {
+                document.getElementById('achievement2').classList.add('unlocked');
+            }
+            if (gameState.achievements.level10) {
+                document.getElementById('achievement3').classList.add('unlocked');
+            }
+            if (gameState.achievements.tenThousand) {
+                document.getElementById('achievement4').classList.add('unlocked');
+            }
+            if (gameState.achievements.dataCenter) {
+                document.getElementById('achievement5').classList.add('unlocked');
+            }
+            if (gameState.achievements.millionaire) {
+                document.getElementById('achievement6').classList.add('unlocked');
             }
         }
 
