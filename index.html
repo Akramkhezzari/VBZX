@@ -130,6 +130,25 @@
             color: var(--primary);
         }
         
+        .error-section {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .error-section h3 {
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .error-section p {
+            font-size: 0.8rem;
+            color: var(--light);
+            margin-bottom: 10px;
+        }
+        
         .stats-section {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -647,6 +666,13 @@
                 <span>مسجل عبر بوت التليجرام</span>
             </div>
         </div>
+
+        <!-- قسم الخطأ -->
+        <div class="error-section" id="errorSection" style="display: none;">
+            <h3><i class="fas fa-exclamation-triangle"></i> يجب فتح اللعبة عبر بوت التليجرام</h3>
+            <p>للتأكد من حفظ تقدمك بشكل صحيح، يرجى فتح هذه اللعبة عبر بوت التليجرام فقط.</p>
+            <p>سيتم استخدام معرفك الحقيقي في التليجرام لحفظ بياناتك.</p>
+        </div>
         
         <div class="stats-section">
             <div class="stat-card">
@@ -923,6 +949,7 @@
         const userAvatar = document.getElementById('userAvatar');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const telegramInfo = document.getElementById('telegramInfo');
+        const errorSection = document.getElementById('errorSection');
         
         // عناصر المعدنين
         const miner1CostElement = document.getElementById('miner1Cost');
@@ -960,26 +987,30 @@
         // تهيئة اللعبة
         async function initGame() {
             // محاولة الحصول على بيانات المستخدم من التليجرام
-            await getTelegramUserData();
+            const telegramUser = await getTelegramUserData();
             
-            updateUI();
-            
-            // إضافة مستمعي الأحداث
-            mineButton.addEventListener('click', mine);
-            buyMiner1Btn.addEventListener('click', () => buyMiner(0));
-            buyMiner2Btn.addEventListener('click', () => buyMiner(1));
-            buyMiner3Btn.addEventListener('click', () => buyMiner(2));
-            buyMiner4Btn.addEventListener('click', () => buyMiner(3));
-            
-            buyClickUpgradeBtn.addEventListener('click', buyClickUpgrade);
-            buyMinerUpgradeBtn.addEventListener('click', buyMinerUpgrade);
-            buyCryptoUpgradeBtn.addEventListener('click', buyCryptoUpgrade);
-            
-            // بدء التعدين التلقائي
-            setInterval(autoMine, 1000);
-            
-            // تحميل البيانات المحفوظة
-            loadGame();
+            if (telegramUser) {
+                // إذا تم الحصول على بيانات التليجرام بنجاح
+                gameState.telegramUser = telegramUser;
+                gameState.userId = telegramUser.id.toString();
+                
+                // تحديث واجهة المستخدم
+                updateUserInterface(telegramUser);
+                showMessage(`مرحباً ${telegramUser.first_name || 'مستخدم التليجرام'}!`);
+                
+                // تحميل بيانات اللعبة
+                updateUI();
+                loadGame();
+                
+                // إضافة مستمعي الأحداث
+                setupEventListeners();
+                
+                // بدء التعدين التلقائي
+                setInterval(autoMine, 1000);
+            } else {
+                // إذا لم تكن في بيئة التليجرام
+                showError("يجب فتح اللعبة عبر بوت التليجرام");
+            }
         }
 
         // الحصول على بيانات المستخدم من التليجرام
@@ -992,41 +1023,47 @@
                     // جلب بيانات المستخدم من التليجرام
                     const user = tg.initDataUnsafe.user;
                     
-                    if (user) {
-                        gameState.telegramUser = user;
-                        gameState.userId = user.id.toString();
-                        
-                        // تحديث واجهة المستخدم
-                        updateUserInterface(user);
-                        showMessage(`مرحباً ${user.first_name || 'مستخدم التليجرام'}!`);
-                        return;
+                    if (user && user.id) {
+                        console.log('تم العثور على مستخدم التليجرام:', user);
+                        return user;
                     }
                 }
                 
-                // إذا لم تكن في بيئة التليجرام، استخدام بيانات تجريبية للاختبار
-                await simulateTelegramUser();
+                console.log('لم يتم العثور على بيانات التليجرام');
+                return null;
                 
             } catch (error) {
                 console.error('خطأ في جلب بيانات التليجرام:', error);
-                await simulateTelegramUser();
+                return null;
             }
         }
 
-        // محاكاة بيانات مستخدم التليجرام للاختبار
-        async function simulateTelegramUser() {
-            const testUser = {
-                id: Math.floor(Math.random() * 1000000),
-                first_name: 'مستخدم',
-                last_name: 'التليجرام',
-                username: 'telegram_user',
-                language_code: 'ar'
-            };
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            mineButton.addEventListener('click', mine);
+            buyMiner1Btn.addEventListener('click', () => buyMiner(0));
+            buyMiner2Btn.addEventListener('click', () => buyMiner(1));
+            buyMiner3Btn.addEventListener('click', () => buyMiner(2));
+            buyMiner4Btn.addEventListener('click', () => buyMiner(3));
             
-            gameState.telegramUser = testUser;
-            gameState.userId = testUser.id.toString();
+            buyClickUpgradeBtn.addEventListener('click', buyClickUpgrade);
+            buyMinerUpgradeBtn.addEventListener('click', buyMinerUpgrade);
+            buyCryptoUpgradeBtn.addEventListener('click', buyCryptoUpgrade);
+        }
+
+        // عرض خطأ
+        function showError(message) {
+            errorSection.style.display = 'block';
+            userInfo.style.display = 'none';
+            loadingSpinner.style.display = 'none';
             
-            updateUserInterface(testUser);
-            showMessage('وضع الاختبار: تم تسجيل الدخول كمستخدم تجريبي');
+            const errorTitle = errorSection.querySelector('h3');
+            errorTitle.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            
+            // إخفاء أقسام اللعبة
+            document.querySelectorAll('.stats-section, .progress-section, .mining-section, .miners-section, .upgrades-section, .achievements-section').forEach(section => {
+                section.style.display = 'none';
+            });
         }
 
         // تحديث واجهة معلومات المستخدم
@@ -1038,7 +1075,7 @@
             const fullName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
             userName.textContent = fullName;
             
-            // تحديث الـ ID
+            // تحديث الـ ID الحقيقي
             userId.textContent = `ID: ${user.id}`;
             
             // تحديث الصورة الرمزية
@@ -1053,14 +1090,17 @@
 
         // حفظ بيانات المستخدم في Firebase
         async function saveUserData() {
-            if (!gameState.userId) return;
+            if (!gameState.userId) {
+                console.error('لا يوجد معرف مستخدم للحفظ');
+                return;
+            }
             
             try {
                 const userData = {
                     ...gameState,
                     lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                    username: gameState.telegramUser?.username || 'unknown',
-                    first_name: gameState.telegramUser?.first_name || 'مستخدم',
+                    telegram_username: gameState.telegramUser?.username || 'unknown',
+                    telegram_first_name: gameState.telegramUser?.first_name || 'مستخدم',
                     created: gameState.created || new Date().toISOString()
                 };
                 
@@ -1069,6 +1109,7 @@
                 
                 await db.collection('users').doc(gameState.userId).set(userData, { merge: true });
                 showSaveIndicator();
+                console.log('تم حفظ البيانات للمستخدم:', gameState.userId);
             } catch (error) {
                 console.error('خطأ في حفظ البيانات:', error);
             }
@@ -1076,7 +1117,10 @@
 
         // تحميل بيانات المستخدم من Firebase
         async function loadUserData() {
-            if (!gameState.userId) return;
+            if (!gameState.userId) {
+                console.error('لا يوجد معرف مستخدم للتحميل');
+                return;
+            }
             
             try {
                 const doc = await db.collection('users').doc(gameState.userId).get();
@@ -1089,17 +1133,27 @@
                     updateUI();
                     updateAchievementsUI();
                     showMessage('تم تحميل بياناتك من السحابة!');
+                    console.log('تم تحميل بيانات المستخدم:', gameState.userId);
                 } else {
                     // إذا كان المستخدم جديداً، احفظ بياناته لأول مرة
-                    saveUserData();
+                    await saveUserData();
+                    showMessage('مرحباً! تم إنشاء حساب جديد لك');
                 }
             } catch (error) {
                 console.error('خطأ في تحميل البيانات:', error);
             }
         }
 
+        // باقي دوال اللعبة (mine, autoMine, buyMiner, etc...) تبقى كما هي
+        // ... [جميع دوال اللعبة السابقة تبقى نفسها]
+
         // التعدين بالنقر
         function mine() {
+            if (!gameState.userId) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
             const cryptoMultiplier = gameState.cryptocurrencies[gameState.currentCrypto].multiplier;
             const coinsGained = gameState.coinsPerClick * cryptoMultiplier;
             
@@ -1122,6 +1176,8 @@
 
         // التعدين التلقائي
         function autoMine() {
+            if (!gameState.userId) return;
+
             if (gameState.coinsPerSecond > 0) {
                 const cryptoMultiplier = gameState.cryptocurrencies[gameState.currentCrypto].multiplier;
                 const coinsGained = gameState.coinsPerSecond * cryptoMultiplier;
@@ -1138,6 +1194,11 @@
 
         // شراء معدة تعدين
         function buyMiner(index) {
+            if (!gameState.userId) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
             const miner = gameState.miners[index];
             
             if (gameState.coins >= miner.cost) {
@@ -1166,6 +1227,11 @@
 
         // ترقية قوة النقرة
         function buyClickUpgrade() {
+            if (!gameState.userId) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
             const upgrade = gameState.upgrades.click;
             
             if (gameState.coins >= upgrade.cost) {
@@ -1185,6 +1251,11 @@
 
         // ترقية المعدنين
         function buyMinerUpgrade() {
+            if (!gameState.userId) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
             const upgrade = gameState.upgrades.miner;
             
             if (gameState.coins >= upgrade.cost) {
@@ -1203,6 +1274,11 @@
 
         // تغيير العملة الرقمية
         function buyCryptoUpgrade() {
+            if (!gameState.userId) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
             const upgrade = gameState.upgrades.crypto;
             
             if (gameState.coins >= upgrade.cost && gameState.currentCrypto < gameState.cryptocurrencies.length - 1) {
@@ -1363,6 +1439,8 @@
 
         // حفظ اللعبة
         function saveGame() {
+            if (!gameState.userId) return;
+
             // حفظ محلي
             localStorage.setItem('cryptoMinerGame', JSON.stringify(gameState));
             
