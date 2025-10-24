@@ -11,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     
     <style>
+        /* نفس الـ CSS السابق - احتفظ به كما هو */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -128,6 +129,16 @@
             margin-top: 10px;
             font-size: 0.8rem;
             color: var(--primary);
+        }
+        
+        .dev-mode {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--warning);
         }
         
         .error-section {
@@ -650,7 +661,7 @@
         <div class="user-section" id="userSection">
             <div class="section-header">
                 <i class="fab fa-telegram"></i>
-                <h2>حساب التليجرام</h2>
+                <h2>حساب المستخدم</h2>
             </div>
             <div class="user-info" id="userInfo">
                 <div class="user-avatar" id="userAvatar">
@@ -663,15 +674,17 @@
             </div>
             <div class="telegram-info" id="telegramInfo">
                 <i class="fab fa-telegram"></i>
-                <span>مسجل عبر بوت التليجرام</span>
+                <span>مسجل عبر التليجرام</span>
             </div>
         </div>
 
         <!-- قسم الخطأ -->
         <div class="error-section" id="errorSection" style="display: none;">
-            <h3><i class="fas fa-exclamation-triangle"></i> يجب فتح اللعبة عبر بوت التليجرام</h3>
-            <p>للتأكد من حفظ تقدمك بشكل صحيح، يرجى فتح هذه اللعبة عبر بوت التليجرام فقط.</p>
-            <p>سيتم استخدام معرفك الحقيقي في التليجرام لحفظ بياناتك.</p>
+            <h3><i class="fas fa-exclamation-triangle"></i> يجب فتح اللعبة عبر التليجرام</h3>
+            <p>للتأكد من حفظ تقدمك بشكل صحيح، يرجى فتح هذه اللعبة عبر التليجرام فقط.</p>
+            <button onclick="openInTelegram()" style="margin-top: 10px;">
+                <i class="fab fa-telegram"></i> فتح في التليجرام
+            </button>
         </div>
         
         <div class="stats-section">
@@ -922,7 +935,7 @@
                 millionaire: false
             },
             
-            // بيانات المستخدم من التليجرام
+            // بيانات المستخدم
             telegramUser: null,
             userId: null,
             lastSave: null
@@ -984,6 +997,83 @@
         const messageElement = document.getElementById('message');
         const saveIndicator = document.getElementById('saveIndicator');
 
+        // دالة لفتح اللعبة في التليجرام
+        function openInTelegram() {
+            const botUsername = 'your_bot_username'; // ضع اسم البوت هنا
+            const gameUrl = window.location.href;
+            const telegramUrl = `https://t.me/${botUsername}?start=game`;
+            window.open(telegramUrl, '_blank');
+        }
+
+        // الحصول على بيانات المستخدم من التليجرام
+        async function getTelegramUserData() {
+            return new Promise((resolve) => {
+                // الطريقة 1: من خلال Telegram WebApp
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const tg = window.Telegram.WebApp;
+                    const user = tg.initDataUnsafe.user;
+                    
+                    if (user && user.id) {
+                        console.log('تم العثور على مستخدم التليجرام:', user);
+                        resolve(user);
+                        return;
+                    }
+                }
+                
+                // الطريقة 2: من خلال parameters في الرابط
+                const urlParams = new URLSearchParams(window.location.search);
+                const tgWebAppData = urlParams.get('tgWebAppData');
+                
+                if (tgWebAppData) {
+                    try {
+                        const decodedData = decodeURIComponent(tgWebAppData);
+                        const params = new URLSearchParams(decodedData);
+                        const userJson = params.get('user');
+                        
+                        if (userJson) {
+                            const user = JSON.parse(userJson);
+                            console.log('تم العثور على مستخدم من الرابط:', user);
+                            resolve(user);
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('خطأ في تحليل بيانات التليجرام:', error);
+                    }
+                }
+                
+                // الطريقة 3: من خلال localStorage (للمستخدمين العائدين)
+                const savedUserData = localStorage.getItem('telegramUserData');
+                if (savedUserData) {
+                    try {
+                        const user = JSON.parse(savedUserData);
+                        console.log('تم تحميل بيانات المستخدم من localStorage:', user);
+                        resolve(user);
+                        return;
+                    } catch (error) {
+                        console.error('خطأ في تحليل بيانات localStorage:', error);
+                    }
+                }
+                
+                // إذا لم نجد أي بيانات، نطلب من المستخدم فتح اللعبة في التليجرام
+                console.log('لم يتم العثور على بيانات المستخدم');
+                resolve(null);
+            });
+        }
+
+        // استخراج بيانات المستخدم من initData
+        function parseInitData(initData) {
+            try {
+                const params = new URLSearchParams(initData);
+                const userStr = params.get('user');
+                if (userStr) {
+                    return JSON.parse(userStr);
+                }
+            } catch (error) {
+                console.error('Error parsing init data:', error);
+            }
+            return null;
+        }
+
         // تهيئة اللعبة
         async function initGame() {
             // محاولة الحصول على بيانات المستخدم من التليجرام
@@ -994,9 +1084,15 @@
                 gameState.telegramUser = telegramUser;
                 gameState.userId = telegramUser.id.toString();
                 
+                // حفظ بيانات المستخدم في localStorage
+                localStorage.setItem('telegramUserData', JSON.stringify(telegramUser));
+                
                 // تحديث واجهة المستخدم
                 updateUserInterface(telegramUser);
                 showMessage(`مرحباً ${telegramUser.first_name || 'مستخدم التليجرام'}!`);
+                
+                // إخفاء قسم الخطأ
+                errorSection.style.display = 'none';
                 
                 // تحميل بيانات اللعبة
                 updateUI();
@@ -1007,34 +1103,10 @@
                 
                 // بدء التعدين التلقائي
                 setInterval(autoMine, 1000);
+                
             } else {
-                // إذا لم تكن في بيئة التليجرام
-                showError("يجب فتح اللعبة عبر بوت التليجرام");
-            }
-        }
-
-        // الحصول على بيانات المستخدم من التليجرام
-        async function getTelegramUserData() {
-            try {
-                // في بيئة التليجرام، يمكن الوصول لبيانات المستخدم عبر window.Telegram.WebApp
-                if (window.Telegram && window.Telegram.WebApp) {
-                    const tg = window.Telegram.WebApp;
-                    
-                    // جلب بيانات المستخدم من التليجرام
-                    const user = tg.initDataUnsafe.user;
-                    
-                    if (user && user.id) {
-                        console.log('تم العثور على مستخدم التليجرام:', user);
-                        return user;
-                    }
-                }
-                
-                console.log('لم يتم العثور على بيانات التليجرام');
-                return null;
-                
-            } catch (error) {
-                console.error('خطأ في جلب بيانات التليجرام:', error);
-                return null;
+                // إذا لم نجد بيانات المستخدم
+                showError();
             }
         }
 
@@ -1052,13 +1124,9 @@
         }
 
         // عرض خطأ
-        function showError(message) {
+        function showError() {
             errorSection.style.display = 'block';
             userInfo.style.display = 'none';
-            loadingSpinner.style.display = 'none';
-            
-            const errorTitle = errorSection.querySelector('h3');
-            errorTitle.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
             
             // إخفاء أقسام اللعبة
             document.querySelectorAll('.stats-section, .progress-section, .mining-section, .miners-section, .upgrades-section, .achievements-section').forEach(section => {
@@ -1082,11 +1150,15 @@
             userAvatar.textContent = user.first_name ? user.first_name.charAt(0).toUpperCase() : 'U';
             userAvatar.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
             
-            // إظهار معلومات التليجرام
+            // تحديث معلومات التليجرام
             if (user.username) {
                 telegramInfo.innerHTML = `<i class="fab fa-telegram"></i> @${user.username}`;
             }
         }
+
+        // باقي دوال اللعبة تبقى كما هي
+        // [جميع الدوال الأخرى تبقى نفسها بدون تغيير]
+        // saveUserData, loadUserData, mine, autoMine, buyMiner, etc...
 
         // حفظ بيانات المستخدم في Firebase
         async function saveUserData() {
@@ -1143,9 +1215,6 @@
                 console.error('خطأ في تحميل البيانات:', error);
             }
         }
-
-        // باقي دوال اللعبة (mine, autoMine, buyMiner, etc...) تبقى كما هي
-        // ... [جميع دوال اللعبة السابقة تبقى نفسها]
 
         // التعدين بالنقر
         function mine() {
