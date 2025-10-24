@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعدين العملات الرقمية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #00d4ff;
+            --secondary: #0099cc;
+            --accent: #ff6b6b;
+            --dark: #0a1931;
+            --darker: #051129;
+            --light: #f8f9fa;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.12);
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: rgba(5, 17, 41, 0.8);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+        }
+        
+        header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            max-width: 100%;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+        
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+        }
+        
+        .stat-card i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            color: var(--primary);
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 3px 0;
+        }
+        
+        .stat-label {
+            color: var(--secondary);
+            font-size: 0.75rem;
+        }
+        
+        .mining-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .crypto-display {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 2px solid var(--primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .mine-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto 15px;
+        }
+        
+        .mine-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+        
+        .mine-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.7);
+        }
+        
+        .mine-button:active {
+            transform: scale(0.95);
+        }
+        
+        .mine-button:active::before {
+            transform: rotate(45deg) scale(1.2);
+        }
+        
+        .mine-button i {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .click-value {
+            font-size: 0.8rem;
+            margin-top: 3px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .miners-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .section-header i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .section-header h2 {
+            color: var(--light);
+            font-size: 1.2rem;
+        }
+        
+        .miners-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .miner-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .miner-card:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .miner-icon {
+            font-size: 1.5rem;
+            color: var(--warning);
+            margin-bottom: 3px;
+        }
+        
+        .miner-card h3 {
+            color: var(--light);
+            font-size: 0.85rem;
+        }
+        
+        .miner-output {
+            color: var(--success);
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+        
+        .miner-cost {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+        
+        .miner-owned {
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+        
+        .upgrades-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .upgrades-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .upgrade-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .upgrade-card:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .upgrade-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .upgrade-icon {
+            font-size: 1.3rem;
+            color: var(--warning);
+        }
+        
+        .upgrade-card h3 {
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+        
+        .upgrade-desc {
+            color: var(--secondary);
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .upgrade-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3px;
+        }
+        
+        .upgrade-level {
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+        
+        .upgrade-cost {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+        
+        button:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+        }
+        
+        button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-section {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .level-progress {
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 8px 0;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.7rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .achievements-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .achievement-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 10px 5px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            opacity: 0.5;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .achievement-card.unlocked {
+            opacity: 1;
+            background: rgba(46, 204, 113, 0.1);
+            border-color: var(--success);
+        }
+        
+        .achievement-icon {
+            font-size: 1.3rem;
+            margin-bottom: 3px;
+        }
+        
+        .achievement-card p {
+            font-size: 0.65rem;
+            color: var(--light);
+            line-height: 1.2;
+        }
+        
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: var(--primary);
+            padding: 10px 15px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            font-size: 0.9rem;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .show {
+            opacity: 1;
+        }
+        
+        /* تحسينات للشاشات الصغيرة جدًا */
+        @media (max-width: 360px) {
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .miners-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .mine-button {
+                width: 100px;
+                height: 100px;
+            }
+        }
+        
+        /* تحسينات للشاشات المتوسطة */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+                padding: 20px;
+            }
+            
+            .stats-section {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .miners-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .upgrades-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .achievements-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .mine-button {
+                width: 150px;
+                height: 150px;
+            }
+        }
+        
+        /* تحسينات للشاشات الكبيرة */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            .stats-section {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-coins"></i> تعدين العملات</h1>
+            <p class="subtitle">إبدأ رحلتك في عالم التعدين واصبح أغنى شخص في العالم الافتراضي!</p>
+        </header>
+        
+        <div class="stats-section">
+            <div class="stat-card">
+                <i class="fas fa-coins"></i>
+                <div class="stat-value" id="coins">0</div>
+                <div class="stat-label">العملات</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-mouse-pointer"></i>
+                <div class="stat-value" id="coinsPerClick">1</div>
+                <div class="stat-label">عملة/نقرة</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <div class="stat-value" id="coinsPerSecond">0</div>
+                <div class="stat-label">عملة/ثانية</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-level-up-alt"></i>
+                <div class="stat-value" id="level">1</div>
+                <div class="stat-label">المستوى</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-star"></i>
+                <div class="stat-value" id="xp">0</div>
+                <div class="stat-label">النقاط</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-digging"></i>
+                <div class="stat-value" id="totalMined">0</div>
+                <div class="stat-label">الإجمالي</div>
+            </div>
+        </div>
+        
+        <div class="progress-section">
+            <div class="section-header">
+                <i class="fas fa-tasks"></i>
+                <h2>تقدم المستوى</h2>
+            </div>
+            <div class="level-progress">
+                <div class="progress-bar" id="levelProgress" style="width: 0%">0%</div>
+            </div>
+            <p style="font-size: 0.8rem;">المستوى التالي: <span id="nextLevelXP">100</span> نقطة</p>
+        </div>
+        
+        <div class="mining-section">
+            <div class="crypto-display">
+                <i class="fab fa-bitcoin"></i>
+                <span id="cryptoDisplay">Bitcoin</span>
+            </div>
+            
+            <button class="mine-button" id="mineButton">
+                <i class="fas fa-hammer"></i>
+                اضغط للتعدين
+                <div class="click-value" id="clickValue">+1 عملة</div>
+            </button>
+            
+            <p style="font-size: 0.9rem;">إجمالي العملات المعدنة: <span id="totalMined">0</span></p>
+        </div>
+        
+        <div class="miners-section">
+            <div class="section-header">
+                <i class="fas fa-robot"></i>
+                <h2>المعدنين التلقائيين</h2>
+            </div>
+            <div class="miners-grid">
+                <div class="miner-card" id="miner1">
+                    <div class="miner-icon"><i class="fas fa-tools"></i></div>
+                    <h3>معول أساسي</h3>
+                    <div class="miner-output">+<span>0.2</span>/ثانية</div>
+                    <div class="miner-cost">السعر: <span id="miner1Cost">10</span></div>
+                    <div class="miner-owned">العدد: <span id="miner1Count">0</span></div>
+                    <button id="buyMiner1"><i class="fas fa-shopping-cart"></i> شراء</button>
+                </div>
+                <div class="miner-card" id="miner2">
+                    <div class="miner-icon"><i class="fas fa-desktop"></i></div>
+                    <h3>حاسوب تعدين</h3>
+                    <div class="miner-output">+<span>1</span>/ثانية</div>
+                    <div class="miner-cost">السعر: <span id="miner2Cost">100</span></div>
+                    <div class="miner-owned">العدد: <span id="miner2Count">0</span></div>
+                    <button id="buyMiner2"><i class="fas fa-shopping-cart"></i> شراء</button>
+                </div>
+                <div class="miner-card" id="miner3">
+                    <div class="miner-icon"><i class="fas fa-server"></i></div>
+                    <h3>مزرعة تعدين</h3>
+                    <div class="miner-output">+<span>5</span>/ثانية</div>
+                    <div class="miner-cost">السعر: <span id="miner3Cost">500</span></div>
+                    <div class="miner-owned">العدد: <span id="miner3Count">0</span></div>
+                    <button id="buyMiner3"><i class="fas fa-shopping-cart"></i> شراء</button>
+                </div>
+                <div class="miner-card" id="miner4">
+                    <div class="miner-icon"><i class="fas fa-building"></i></div>
+                    <h3>مركز بيانات</h3>
+                    <div class="miner-output">+<span>25</span>/ثانية</div>
+                    <div class="miner-cost">السعر: <span id="miner4Cost">2500</span></div>
+                    <div class="miner-owned">العدد: <span id="miner4Count">0</span></div>
+                    <button id="buyMiner4"><i class="fas fa-shopping-cart"></i> شراء</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="upgrades-section">
+            <div class="section-header">
+                <i class="fas fa-bolt"></i>
+                <h2>الترقيات</h2>
+            </div>
+            
+            <div class="upgrades-grid">
+                <div class="upgrade-card" id="clickUpgrade">
+                    <div class="upgrade-header">
+                        <div class="upgrade-icon"><i class="fas fa-mouse-pointer"></i></div>
+                        <h3>تحسين النقرة</h3>
+                    </div>
+                    <div class="upgrade-desc">يزيد قوة النقرة بمقدار +1 عملة</div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-level">المستوى: <span id="clickLevel">1</span></div>
+                        <div class="upgrade-cost">السعر: <span id="clickCost">50</span></div>
+                    </div>
+                    <button id="buyClickUpgrade"><i class="fas fa-level-up-alt"></i> ترقية</button>
+                </div>
+                
+                <div class="upgrade-card" id="minerUpgrade">
+                    <div class="upgrade-header">
+                        <div class="upgrade-icon"><i class="fas fa-industry"></i></div>
+                        <h3>تحسين المعدنين</h3>
+                    </div>
+                    <div class="upgrade-desc">يزيد إنتاج جميع المعدنين بنسبة 10%</div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-level">المستوى: <span id="minerUpgradeLevel">1</span></div>
+                        <div class="upgrade-cost">السعر: <span id="minerUpgradeCost">100</span></div>
+                    </div>
+                    <button id="buyMinerUpgrade"><i class="fas fa-level-up-alt"></i> ترقية</button>
+                </div>
+                
+                <div class="upgrade-card" id="cryptoUpgrade">
+                    <div class="upgrade-header">
+                        <div class="upgrade-icon"><i class="fas fa-exchange-alt"></i></div>
+                        <h3>تغيير العملة</h3>
+                    </div>
+                    <div class="upgrade-desc">يفتح عملة رقمية جديدة مع مضاعفة الأرباح</div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-level">العملة: <span id="currentCrypto">Bitcoin</span></div>
+                        <div class="upgrade-cost">السعر: <span id="cryptoUpgradeCost">1000</span></div>
+                    </div>
+                    <button id="buyCryptoUpgrade"><i class="fas fa-level-up-alt"></i> ترقية</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="achievements-section">
+            <div class="section-header">
+                <i class="fas fa-trophy"></i>
+                <h2>الإنجازات</h2>
+            </div>
+            
+            <div class="achievements-grid">
+                <div class="achievement-card" id="achievement1">
+                    <div class="achievement-icon">🥉</div>
+                    <p>أول 100 عملة</p>
+                </div>
+                <div class="achievement-card" id="achievement2">
+                    <div class="achievement-icon">🥈</div>
+                    <p>أول معدة تلقائية</p>
+                </div>
+                <div class="achievement-card" id="achievement3">
+                    <div class="achievement-icon">🥇</div>
+                    <p>الوصول للمستوى 10</p>
+                </div>
+                <div class="achievement-card" id="achievement4">
+                    <div class="achievement-icon">💎</div>
+                    <p>10,000 عملة</p>
+                </div>
+                <div class="achievement-card" id="achievement5">
+                    <div class="achievement-icon">🚀</div>
+                    <p>مركز بيانات</p>
+                </div>
+                <div class="achievement-card" id="achievement6">
+                    <div class="achievement-icon">👑</div>
+                    <p>مليونير التعدين</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="message" id="message"></div>
+
+    <script>
+        // حالة اللعبة
+        const gameState = {
+            coins: 0,
+            coinsPerClick: 1,
+            coinsPerSecond: 0,
+            level: 1,
+            xp: 0,
+            nextLevelXP: 100,
+            totalMined: 0,
+            
+            // المعدنين التلقائيين
+            miners: [
+                { id: 1, name: "معول أساسي", baseOutput: 0.2, count: 0, baseCost: 10, cost: 10 },
+                { id: 2, name: "حاسوب تعدين", baseOutput: 1, count: 0, baseCost: 100, cost: 100 },
+                { id: 3, name: "مزرعة تعدين", baseOutput: 5, count: 0, baseCost: 500, cost: 500 },
+                { id: 4, name: "مركز بيانات", baseOutput: 25, count: 0, baseCost: 2500, cost: 2500 }
+            ],
+            
+            // الترقيات
+            upgrades: {
+                click: { level: 1, cost: 50, baseCost: 50 },
+                miner: { level: 1, cost: 100, baseCost: 100 },
+                crypto: { level: 1, cost: 1000, baseCost: 1000 }
+            },
+            
+            // العملات الرقمية
+            cryptocurrencies: [
+                { name: "Bitcoin", multiplier: 1, icon: "fab fa-bitcoin" },
+                { name: "Ethereum", multiplier: 2, icon: "fab fa-ethereum" },
+                { name: "Litecoin", multiplier: 3, icon: "fab fa-bitcoin" },
+                { name: "Ripple", multiplier: 5, icon: "fas fa-x" },
+                { name: "Cardano", multiplier: 8, icon: "fas fa-chart-line" },
+                { name: "Polkadot", multiplier: 12, icon: "fas fa-circle" },
+                { name: "Dogecoin", multiplier: 20, icon: "fab fa-reddit" }
+            ],
+            currentCrypto: 0,
+            
+            // الإنجازات
+            achievements: {
+                first100: false,
+                firstMiner: false,
+                level10: false,
+                tenThousand: false,
+                dataCenter: false,
+                millionaire: false
+            }
+        };
+
+        // العناصر
+        const coinsElement = document.getElementById('coins');
+        const coinsPerClickElement = document.getElementById('coinsPerClick');
+        const coinsPerSecondElement = document.getElementById('coinsPerSecond');
+        const levelElement = document.getElementById('level');
+        const xpElement = document.getElementById('xp');
+        const nextLevelXPElement = document.getElementById('nextLevelXP');
+        const levelProgressElement = document.getElementById('levelProgress');
+        const totalMinedElement = document.getElementById('totalMined');
+        const cryptoDisplayElement = document.getElementById('cryptoDisplay');
+        const mineButton = document.getElementById('mineButton');
+        const clickValueElement = document.getElementById('clickValue');
+        
+        // عناصر المعدنين
+        const miner1CostElement = document.getElementById('miner1Cost');
+        const miner1CountElement = document.getElementById('miner1Count');
+        const buyMiner1Btn = document.getElementById('buyMiner1');
+        
+        const miner2CostElement = document.getElementById('miner2Cost');
+        const miner2CountElement = document.getElementById('miner2Count');
+        const buyMiner2Btn = document.getElementById('buyMiner2');
+        
+        const miner3CostElement = document.getElementById('miner3Cost');
+        const miner3CountElement = document.getElementById('miner3Count');
+        const buyMiner3Btn = document.getElementById('buyMiner3');
+        
+        const miner4CostElement = document.getElementById('miner4Cost');
+        const miner4CountElement = document.getElementById('miner4Count');
+        const buyMiner4Btn = document.getElementById('buyMiner4');
+        
+        // عناصر الترقيات
+        const clickLevelElement = document.getElementById('clickLevel');
+        const clickCostElement = document.getElementById('clickCost');
+        const buyClickUpgradeBtn = document.getElementById('buyClickUpgrade');
+        
+        const minerUpgradeLevelElement = document.getElementById('minerUpgradeLevel');
+        const minerUpgradeCostElement = document.getElementById('minerUpgradeCost');
+        const buyMinerUpgradeBtn = document.getElementById('buyMinerUpgrade');
+        
+        const currentCryptoElement = document.getElementById('currentCrypto');
+        const cryptoUpgradeCostElement = document.getElementById('cryptoUpgradeCost');
+        const buyCryptoUpgradeBtn = document.getElementById('buyCryptoUpgrade');
+        
+        const messageElement = document.getElementById('message');
+
+        // تهيئة اللعبة
+        function initGame() {
+            updateUI();
+            
+            // إضافة مستمعي الأحداث
+            mineButton.addEventListener('click', mine);
+            buyMiner1Btn.addEventListener('click', () => buyMiner(0));
+            buyMiner2Btn.addEventListener('click', () => buyMiner(1));
+            buyMiner3Btn.addEventListener('click', () => buyMiner(2));
+            buyMiner4Btn.addEventListener('click', () => buyMiner(3));
+            
+            buyClickUpgradeBtn.addEventListener('click', buyClickUpgrade);
+            buyMinerUpgradeBtn.addEventListener('click', buyMinerUpgrade);
+            buyCryptoUpgradeBtn.addEventListener('click', buyCryptoUpgrade);
+            
+            // بدء التعدين التلقائي
+            setInterval(autoMine, 1000);
+            
+            // تحميل البيانات المحفوظة
+            loadGame();
+        }
+
+        // التعدين بالنقر
+        function mine() {
+            const cryptoMultiplier = gameState.cryptocurrencies[gameState.currentCrypto].multiplier;
+            const coinsGained = gameState.coinsPerClick * cryptoMultiplier;
+            
+            gameState.coins += coinsGained;
+            gameState.totalMined += coinsGained;
+            gameState.xp += coinsGained / 10;
+            
+            checkLevelUp();
+            updateUI();
+            checkAchievements();
+            
+            // تأثير مرئي
+            mineButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                mineButton.style.transform = 'scale(1)';
+            }, 100);
+            
+            showMessage(`+${coinsGained} عملة!`);
+        }
+
+        // التعدين التلقائي
+        function autoMine() {
+            if (gameState.coinsPerSecond > 0) {
+                const cryptoMultiplier = gameState.cryptocurrencies[gameState.currentCrypto].multiplier;
+                const coinsGained = gameState.coinsPerSecond * cryptoMultiplier;
+                
+                gameState.coins += coinsGained;
+                gameState.totalMined += coinsGained;
+                gameState.xp += coinsGained / 20;
+                
+                checkLevelUp();
+                updateUI();
+                checkAchievements();
+            }
+        }
+
+        // شراء معدة تعدين
+        function buyMiner(index) {
+            const miner = gameState.miners[index];
+            
+            if (gameState.coins >= miner.cost) {
+                gameState.coins -= miner.cost;
+                miner.count++;
+                
+                // زيادة سعر المعدة
+                miner.cost = Math.floor(miner.baseCost * Math.pow(1.15, miner.count));
+                
+                // تحديث إنتاج العملات في الثانية
+                updateCoinsPerSecond();
+                
+                updateUI();
+                showMessage(`اشتريت ${miner.name}!`);
+                
+                // فتح إنجاز أول معدة
+                if (!gameState.achievements.firstMiner) {
+                    gameState.achievements.firstMiner = true;
+                    document.getElementById('achievement2').classList.add('unlocked');
+                    showMessage('إنجاز مفتوح: أول معدة تلقائية!');
+                }
+            } else {
+                showMessage('لا تملك عملات كافية!', 'error');
+            }
+        }
+
+        // ترقية قوة النقرة
+        function buyClickUpgrade() {
+            const upgrade = gameState.upgrades.click;
+            
+            if (gameState.coins >= upgrade.cost) {
+                gameState.coins -= upgrade.cost;
+                upgrade.level++;
+                gameState.coinsPerClick = upgrade.level;
+                
+                // زيادة سعر الترقية
+                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.level - 1));
+                
+                updateUI();
+                showMessage('تم ترقية قوة النقرة!');
+            } else {
+                showMessage('لا تملك عملات كافية!', 'error');
+            }
+        }
+
+        // ترقية المعدنين
+        function buyMinerUpgrade() {
+            const upgrade = gameState.upgrades.miner;
+            
+            if (gameState.coins >= upgrade.cost) {
+                gameState.coins -= upgrade.cost;
+                upgrade.level++;
+                
+                // زيادة سعر الترقية
+                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.8, upgrade.level - 1));
+                
+                updateUI();
+                showMessage('تم ترقية جميع المعدنين!');
+            } else {
+                showMessage('لا تملك عملات كافية!', 'error');
+            }
+        }
+
+        // تغيير العملة الرقمية
+        function buyCryptoUpgrade() {
+            const upgrade = gameState.upgrades.crypto;
+            
+            if (gameState.coins >= upgrade.cost && gameState.currentCrypto < gameState.cryptocurrencies.length - 1) {
+                gameState.coins -= upgrade.cost;
+                gameState.currentCrypto++;
+                upgrade.level++;
+                
+                // زيادة سعر الترقية
+                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(2.5, upgrade.level - 1));
+                
+                updateUI();
+                showMessage(`الآن تقوم بتعدين ${gameState.cryptocurrencies[gameState.currentCrypto].name}!`);
+            } else if (gameState.currentCrypto >= gameState.cryptocurrencies.length - 1) {
+                showMessage('لقد وصلت لأقوى عملة رقمية!', 'error');
+            } else {
+                showMessage('لا تملك عملات كافية!', 'error');
+            }
+        }
+
+        // تحديث إنتاج العملات في الثانية
+        function updateCoinsPerSecond() {
+            let total = 0;
+            const minerMultiplier = 1 + (gameState.upgrades.miner.level - 1) * 0.1;
+            
+            gameState.miners.forEach(miner => {
+                total += miner.count * miner.baseOutput * minerMultiplier;
+            });
+            
+            gameState.coinsPerSecond = total;
+        }
+
+        // التحقق من ارتفاع المستوى
+        function checkLevelUp() {
+            if (gameState.xp >= gameState.nextLevelXP) {
+                gameState.level++;
+                gameState.nextLevelXP = Math.floor(gameState.nextLevelXP * 1.5);
+                
+                showMessage(`تهانينا! لقد وصلت للمستوى ${gameState.level}`, 'level');
+                
+                // فتح إنجاز المستوى 10
+                if (gameState.level >= 10 && !gameState.achievements.level10) {
+                    gameState.achievements.level10 = true;
+                    document.getElementById('achievement3').classList.add('unlocked');
+                    showMessage('إنجاز مفتوح: الوصول للمستوى 10!');
+                }
+            }
+        }
+
+        // التحقق من الإنجازات
+        function checkAchievements() {
+            // إنجاز أول 100 عملة
+            if (gameState.totalMined >= 100 && !gameState.achievements.first100) {
+                gameState.achievements.first100 = true;
+                document.getElementById('achievement1').classList.add('unlocked');
+                showMessage('إنجاز مفتوح: أول 100 عملة!');
+            }
+            
+            // إنجاز 10,000 عملة
+            if (gameState.totalMined >= 10000 && !gameState.achievements.tenThousand) {
+                gameState.achievements.tenThousand = true;
+                document.getElementById('achievement4').classList.add('unlocked');
+                showMessage('إنجاز مفتوح: 10,000 عملة!');
+            }
+            
+            // إنجاز مركز بيانات
+            if (gameState.miners[3].count > 0 && !gameState.achievements.dataCenter) {
+                gameState.achievements.dataCenter = true;
+                document.getElementById('achievement5').classList.add('unlocked');
+                showMessage('إنجاز مفتوح: مركز بيانات!');
+            }
+            
+            // إنجاز المليونير
+            if (gameState.totalMined >= 1000000 && !gameState.achievements.millionaire) {
+                gameState.achievements.millionaire = true;
+                document.getElementById('achievement6').classList.add('unlocked');
+                showMessage('إنجاز مفتوح: مليونير التعدين!');
+            }
+        }
+
+        // تحديث واجهة المستخدم
+        function updateUI() {
+            // تحديث الإحصائيات
+            coinsElement.textContent = Math.floor(gameState.coins);
+            coinsPerClickElement.textContent = gameState.coinsPerClick;
+            coinsPerSecondElement.textContent = gameState.coinsPerSecond.toFixed(1);
+            levelElement.textContent = gameState.level;
+            xpElement.textContent = Math.floor(gameState.xp);
+            nextLevelXPElement.textContent = gameState.nextLevelXP;
+            totalMinedElement.textContent = Math.floor(gameState.totalMined);
+            
+            // تحديث شريط التقدم
+            const progressPercent = (gameState.xp / gameState.nextLevelXP) * 100;
+            levelProgressElement.style.width = `${Math.min(progressPercent, 100)}%`;
+            levelProgressElement.textContent = `${Math.min(progressPercent, 100).toFixed(1)}%`;
+            
+            // تحديث عرض العملة
+            cryptoDisplayElement.textContent = gameState.cryptocurrencies[gameState.currentCrypto].name;
+            clickValueElement.textContent = `+${gameState.coinsPerClick * gameState.cryptocurrencies[gameState.currentCrypto].multiplier} عملة`;
+            
+            // تحديث المعدنين
+            miner1CostElement.textContent = gameState.miners[0].cost;
+            miner1CountElement.textContent = gameState.miners[0].count;
+            buyMiner1Btn.disabled = gameState.coins < gameState.miners[0].cost;
+            
+            miner2CostElement.textContent = gameState.miners[1].cost;
+            miner2CountElement.textContent = gameState.miners[1].count;
+            buyMiner2Btn.disabled = gameState.coins < gameState.miners[1].cost;
+            
+            miner3CostElement.textContent = gameState.miners[2].cost;
+            miner3CountElement.textContent = gameState.miners[2].count;
+            buyMiner3Btn.disabled = gameState.coins < gameState.miners[2].cost;
+            
+            miner4CostElement.textContent = gameState.miners[3].cost;
+            miner4CountElement.textContent = gameState.miners[3].count;
+            buyMiner4Btn.disabled = gameState.coins < gameState.miners[3].cost;
+            
+            // تحديث الترقيات
+            clickLevelElement.textContent = gameState.upgrades.click.level;
+            clickCostElement.textContent = gameState.upgrades.click.cost;
+            buyClickUpgradeBtn.disabled = gameState.coins < gameState.upgrades.click.cost;
+            
+            minerUpgradeLevelElement.textContent = gameState.upgrades.miner.level;
+            minerUpgradeCostElement.textContent = gameState.upgrades.miner.cost;
+            buyMinerUpgradeBtn.disabled = gameState.coins < gameState.upgrades.miner.cost;
+            
+            currentCryptoElement.textContent = gameState.cryptocurrencies[gameState.currentCrypto].name;
+            cryptoUpgradeCostElement.textContent = gameState.upgrades.crypto.cost;
+            buyCryptoUpgradeBtn.disabled = gameState.coins < gameState.upgrades.crypto.cost || 
+                                          gameState.currentCrypto >= gameState.cryptocurrencies.length - 1;
+            
+            // تحديث إنتاج العملات في الثانية
+            updateCoinsPerSecond();
+            
+            // حفظ اللعبة
+            saveGame();
+        }
+
+        // عرض رسالة
+        function showMessage(text, type = "success") {
+            messageElement.textContent = text;
+            messageElement.style.borderLeftColor = type === "error" ? "#ff6b6b" : 
+                                        type === "level" ? "#9b59b6" : "#00d4ff";
+            messageElement.classList.add('show');
+            
+            setTimeout(() => {
+                messageElement.classList.remove('show');
+            }, 3000);
+        }
+
+        // حفظ اللعبة
+        function saveGame() {
+            localStorage.setItem('cryptoMinerGame', JSON.stringify(gameState));
+        }
+
+        // تحميل اللعبة
+        function loadGame() {
+            const savedGame = localStorage.getItem('cryptoMinerGame');
+            if (savedGame) {
+                const parsedGame = JSON.parse(savedGame);
+                Object.assign(gameState, parsedGame);
+                
+                // تحديث واجهة المستخدم بعد التحميل
+                updateUI();
+                
+                // تحديث الإنجازات
+                if (gameState.achievements.first100) {
+                    document.getElementById('achievement1').classList.add('unlocked');
+                }
+                if (gameState.achievements.firstMiner) {
+                    document.getElementById('achievement2').classList.add('unlocked');
+                }
+                if (gameState.achievements.level10) {
+                    document.getElementById('achievement3').classList.add('unlocked');
+                }
+                if (gameState.achievements.tenThousand) {
+                    document.getElementById('achievement4').classList.add('unlocked');
+                }
+                if (gameState.achievements.dataCenter) {
+                    document.getElementById('achievement5').classList.add('unlocked');
+                }
+                if (gameState.achievements.millionaire) {
+                    document.getElementById('achievement6').classList.add('unlocked');
+                }
+                
+                showMessage('تم تحميل اللعبة بنجاح!');
+            }
+        }
+
+        // بدء اللعبة
+        initGame();
+    </script>
+</body>
+</html>
