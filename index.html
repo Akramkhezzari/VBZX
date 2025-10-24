@@ -3,98 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تعدين العملات الرقمية</title>
+    <title>Zestara - لعبة تعدين العملات</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- إضافة Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    
     <style>
-        /* نفس الـ CSS السابق - احتفظ به كما هو */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         :root {
-            --primary: #2563eb;
-            --secondary: #3b82f6;
-            --accent: #ef4444;
-            --dark: #f8fafc;
-            --darker: #e2e8f0;
-            --light: #1e293b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --card-border: rgba(226, 232, 240, 0.8);
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --accent: #ff006e;
+            --light-bg: #f8fafc;
+            --lighter-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #38b000;
+            --warning: #ff9e00;
+            --danger: #ef233c;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-            color: var(--light);
+            background: linear-gradient(135deg, var(--light-bg), #e2e8f0);
+            color: var(--text);
             min-height: 100vh;
-            padding: 10px;
-            text-align: center;
+            overflow-x: hidden;
         }
-        
+
         .container {
-            max-width: 100%;
+            max-width: 1400px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
             padding: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--card-border);
         }
-        
+
+        /* Header Styles */
         header {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
         }
-        
-        h1 {
-            color: var(--primary);
-            margin-bottom: 8px;
-            font-size: 1.8rem;
+
+        .logo {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 12px;
         }
-        
-        .subtitle {
-            color: var(--secondary);
-            font-size: 0.9rem;
-            max-width: 100%;
-            margin: 0 auto;
-            line-height: 1.4;
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: pulse 2s infinite;
         }
-        
-        .user-section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow);
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        
+
         .user-info {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
-            margin-top: 10px;
+            background: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
-        
+
         .user-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
@@ -102,550 +98,767 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 1.2rem;
         }
-        
+
         .user-details {
             text-align: right;
         }
-        
+
         .user-name {
             font-weight: bold;
-            font-size: 1rem;
-            color: var(--light);
+            font-size: 0.9rem;
         }
-        
+
         .user-id {
-            font-size: 0.8rem;
-            color: var(--secondary);
-            margin-top: 2px;
+            font-size: 0.7rem;
+            color: var(--text-light);
         }
-        
-        .telegram-info {
-            background: rgba(37, 99, 235, 0.1);
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: var(--primary);
-        }
-        
-        .dev-mode {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--warning);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: var(--warning);
-        }
-        
-        .error-section {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--accent);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        
-        .error-section h3 {
-            color: var(--accent);
-            margin-bottom: 8px;
-        }
-        
-        .error-section p {
-            font-size: 0.8rem;
-            color: var(--light);
-            margin-bottom: 10px;
-        }
-        
-        .stats-section {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .stat-card {
+
+        /* الشريط الأفقي */
+        .stats-bar {
+            display: flex;
+            gap: 20px;
             background: var(--card-bg);
-            border-radius: 10px;
-            padding: 12px 8px;
-            text-align: center;
-            border: 1px solid var(--card-border);
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
             box-shadow: var(--shadow);
         }
-        
-        .stat-card i {
-            font-size: 1.3rem;
-            color: var(--primary);
-            margin-bottom: 5px;
+
+        .stat-card {
+            text-align: center;
+            transition: transform 0.3s;
         }
-        
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
         .stat-value {
-            color: var(--primary);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            margin: 3px 0;
+            color: var(--primary);
+            margin-bottom: 3px;
         }
-        
+
         .stat-label {
-            color: var(--secondary);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
         }
-        
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Mining Area */
         .mining-section {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 25px;
+            border: 1px solid var(--border);
             box-shadow: var(--shadow);
         }
-        
-        .crypto-display {
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            padding: 8px 15px;
-            border-radius: 25px;
-            border: 2px solid var(--primary);
-            display: inline-flex;
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--text);
+            display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 15px;
         }
-        
-        .mine-button {
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .mine-display {
+            height: 250px;
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.9));
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(58, 134, 255, 0.3);
+            box-shadow: inset 0 0 25px rgba(58, 134, 255, 0.2);
+        }
+
+        .mine-display::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(58, 134, 255, 0.1) 0%, transparent 70%);
+        }
+
+        .mine-core {
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
             border-radius: 50%;
-            width: 120px;
-            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
             color: white;
-            font-weight: bold;
-            font-size: 1rem;
+            box-shadow: 0 0 25px var(--primary);
+            animation: rotate 10s linear infinite;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .mine-core:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px var(--primary);
+        }
+
+        .mine-core:active {
+            transform: scale(0.95);
+        }
+
+        .mining-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mining-stat {
+            background: rgba(58, 134, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(58, 134, 255, 0.1);
+        }
+
+        .mining-stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .mining-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* زر الدعوة في الأسفل */
+        .invite-section {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .invite-card {
+            text-align: center;
+        }
+
+        .invite-header {
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            margin: 0 auto 15px;
-        }
-        
-        .mine-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(37, 99, 235, 0.5);
-        }
-        
-        .mine-button:active {
-            transform: scale(0.95);
-        }
-        
-        .mine-button i {
-            font-size: 2rem;
-            margin-bottom: 5px;
-        }
-        
-        .click-value {
-            font-size: 0.8rem;
-            margin-top: 3px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .miners-section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
+            gap: 10px;
             margin-bottom: 15px;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow);
         }
-        
-        .section-header {
+
+        .invite-icon {
+            font-size: 1.5rem;
+            color: var(--success);
+        }
+
+        .invite-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .invite-description {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .invite-btn {
+            background: linear-gradient(135deg, var(--success), #2a8c00);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 4px 12px rgba(56, 176, 0, 0.3);
+            margin: 0 auto;
+        }
+
+        .invite-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(56, 176, 0, 0.4);
+        }
+
+        .invite-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .invite-stat {
+            text-align: center;
+        }
+
+        .invite-stat-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .invite-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Upgrades Section */
+        .upgrades-section {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .upgrade-item {
+            background: rgba(58, 134, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
             margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(58, 134, 255, 0.1);
         }
-        
-        .section-header i {
+
+        .upgrade-item:hover {
+            background: rgba(58, 134, 255, 0.08);
+            transform: translateX(-4px);
+        }
+
+        .upgrade-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .upgrade-icon {
+            font-size: 1.5rem;
             color: var(--primary);
-            font-size: 1.2rem;
         }
-        
-        .section-header h2 {
-            color: var(--light);
-            font-size: 1.2rem;
+
+        .upgrade-details h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--text);
         }
-        
-        .miners-grid {
+
+        .upgrade-details p {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .upgrade-cost {
+            color: var(--warning);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: 0 3px 8px rgba(58, 134, 255, 0.3);
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(58, 134, 255, 0.4);
+        }
+
+        .buy-btn:disabled {
+            background: rgba(0, 0, 0, 0.1);
+            color: rgba(0, 0, 0, 0.4);
+            cursor: not-allowed;
+        }
+
+        /* Tasks Section */
+        .tasks-section {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .task-card {
+            background: rgba(58, 134, 255, 0.05);
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.3s;
+            border: 1px solid rgba(58, 134, 255, 0.1);
+        }
+
+        .task-card:hover {
+            background: rgba(58, 134, 255, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .task-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .task-reward {
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .task-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .task-claim {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .task-claim:hover:not(:disabled) {
+            background: #2a8c00;
+            transform: scale(1.05);
+        }
+
+        .task-claim:disabled {
+            background: rgba(0, 0, 0, 0.1);
+            color: rgba(0, 0, 0, 0.4);
+            cursor: not-allowed;
+        }
+
+        /* نافذة الدعوة */
+        .invite-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .invite-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            transform: scale(0.8);
+            transition: transform 0.3s;
+        }
+
+        .invite-modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .close-modal:hover {
+            opacity: 1;
+        }
+
+        .referral-link {
+            background: rgba(58, 134, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(58, 134, 255, 0.1);
+        }
+
+        .link-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            word-break: break-all;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #2b6cff;
+        }
+
+        .social-share {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
+            margin-bottom: 20px;
         }
-        
-        .miner-card {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: 1px solid var(--card-border);
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .miner-card:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
-        }
-        
-        .miner-icon {
-            font-size: 1.5rem;
-            color: var(--warning);
-            margin-bottom: 3px;
-        }
-        
-        .miner-card h3 {
-            color: var(--light);
-            font-size: 0.85rem;
-        }
-        
-        .miner-output {
-            color: var(--success);
-            font-weight: bold;
-            font-size: 0.75rem;
-        }
-        
-        .miner-cost {
-            color: var(--accent);
-            font-weight: bold;
-            font-size: 0.75rem;
-        }
-        
-        .miner-owned {
-            color: var(--primary);
-            font-size: 0.75rem;
-        }
-        
-        .upgrades-section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow);
-        }
-        
-        .upgrades-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        
-        .upgrade-card {
-            background: rgba(255, 255, 255, 0.7);
+
+        .share-btn {
+            background: rgba(58, 134, 255, 0.05);
+            border: 1px solid rgba(58, 134, 255, 0.1);
             border-radius: 8px;
             padding: 12px;
-            transition: all 0.3s;
+            color: var(--text);
             cursor: pointer;
-            border: 1px solid var(--card-border);
+            transition: all 0.3s;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             gap: 8px;
         }
-        
-        .upgrade-card:hover {
-            background: rgba(255, 255, 255, 0.9);
+
+        .share-btn:hover {
+            background: rgba(58, 134, 255, 0.1);
             transform: translateY(-2px);
         }
-        
-        .upgrade-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .upgrade-icon {
-            font-size: 1.3rem;
-            color: var(--warning);
-        }
-        
-        .upgrade-card h3 {
-            color: var(--light);
-            font-size: 0.9rem;
-        }
-        
-        .upgrade-desc {
-            color: var(--secondary);
-            font-size: 0.75rem;
-            line-height: 1.3;
-        }
-        
-        .upgrade-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 3px;
-        }
-        
-        .upgrade-level {
-            color: var(--primary);
-            font-size: 0.75rem;
-        }
-        
-        .upgrade-cost {
-            color: var(--accent);
-            font-weight: bold;
-            font-size: 0.75rem;
-        }
-        
-        button {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 6px;
-            padding: 8px 12px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 8px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            box-shadow: var(--shadow);
-        }
-        
-        button:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            transform: translateY(-1px);
-        }
-        
-        button:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .progress-section {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow);
-        }
-        
-        .level-progress {
-            height: 16px;
-            background: rgba(226, 232, 240, 0.8);
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 8px 0;
-            position: relative;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 8px;
-            transition: width 0.5s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.7rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .achievements-section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow);
-        }
-        
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        
-        .achievement-card {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 6px;
-            padding: 10px 5px;
-            text-align: center;
-            border: 1px solid var(--card-border);
-            opacity: 0.5;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .achievement-card.unlocked {
-            opacity: 1;
-            background: rgba(16, 185, 129, 0.1);
-            border-color: var(--success);
-        }
-        
-        .achievement-icon {
-            font-size: 1.3rem;
-            margin-bottom: 3px;
-        }
-        
-        .achievement-card p {
-            font-size: 0.65rem;
-            color: var(--light);
-            line-height: 1.2;
-        }
-        
-        .message {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            color: var(--primary);
-            padding: 10px 15px;
-            border-radius: 6px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 100;
-            border-left: 4px solid var(--primary);
-            box-shadow: var(--shadow);
-            font-size: 0.9rem;
-            max-width: 90%;
-            text-align: center;
-        }
-        
-        .show {
-            opacity: 1;
-        }
-        
-        .save-indicator {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: var(--success);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .save-indicator.show {
-            opacity: 1;
+
+        .share-btn.whatsapp {
+            color: #25D366;
         }
 
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 10px;
-            padding: 20px;
+        .share-btn.telegram {
+            color: #0088cc;
         }
 
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .share-btn.facebook {
+            color: #1877F2;
         }
 
-        @keyframes spin {
+        .share-btn.twitter {
+            color: #1DA1F2;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* تحسينات للشاشات الصغيرة جدًا */
-        @media (max-width: 360px) {
-            .stats-section {
-                grid-template-columns: 1fr;
+        .coin {
+            position: absolute;
+            font-size: 1.2rem;
+            animation: float 1.5s ease-out forwards;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
             }
-            
-            .miners-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .achievements-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .mine-button {
-                width: 100px;
-                height: 100px;
+            100% {
+                transform: translateY(-80px) scale(0.5);
+                opacity: 0;
             }
         }
-        
-        /* تحسينات للشاشات المتوسطة */
-        @media (min-width: 768px) {
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(150%);
+            transition: transform 0.5s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
             .container {
-                max-width: 700px;
-                padding: 20px;
+                padding: 12px;
             }
             
-            .stats-section {
-                grid-template-columns: repeat(3, 1fr);
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 18px;
             }
             
-            .miners-grid {
-                grid-template-columns: repeat(4, 1fr);
+            .upgrades-section {
+                order: 3;
             }
             
-            .upgrades-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .mine-display {
+                height: 220px;
             }
             
-            .achievements-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-            
-            h1 {
+            .mine-core {
+                width: 90px;
+                height: 90px;
                 font-size: 2.2rem;
             }
+        }
+
+        @media (max-width: 992px) {
+            .stats-bar {
+                gap: 15px;
+            }
             
-            .mine-button {
-                width: 150px;
-                height: 150px;
+            .stat-card {
+                padding: 10px 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            
+            .mining-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tasks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
-        
-        /* تحسينات للشاشات الكبيرة */
-        @media (min-width: 1024px) {
-            .container {
-                max-width: 900px;
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
             }
             
-            .stats-section {
-                grid-template-columns: repeat(6, 1fr);
+            .stats-bar {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stat-card {
+                flex: 1;
+                min-width: 90px;
+            }
+            
+            .mining-section, .upgrades-section, .tasks-section, .invite-section {
+                padding: 18px;
+            }
+            
+            .mine-display {
+                height: 180px;
+            }
+            
+            .mine-core {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            
+            .mining-stats {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .upgrade-item {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .upgrade-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .tasks-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo-text {
+                font-size: 1.3rem;
+            }
+
+            .social-share {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .stat-card {
+                flex: 1 1 100%;
+            }
+            
+            .mine-display {
+                height: 160px;
+            }
+            
+            .mine-core {
+                width: 60px;
+                height: 60px;
+                font-size: 1.6rem;
+            }
+            
+            .mining-section, .upgrades-section, .tasks-section, .invite-section {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .buy-btn, .task-claim {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                text-align: center;
             }
         }
     </style>
@@ -653,917 +866,1153 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-coins"></i> تعدين العملات</h1>
-            <p class="subtitle">إبدأ رحلتك في عالم التعدين واصبح أغنى شخص في العالم الافتراضي!</p>
-        </header>
-        
-        <!-- قسم معلومات المستخدم -->
-        <div class="user-section" id="userSection">
-            <div class="section-header">
-                <i class="fab fa-telegram"></i>
-                <h2>حساب المستخدم</h2>
-            </div>
-            <div class="user-info" id="userInfo">
-                <div class="user-avatar" id="userAvatar">
-                    <div class="loading-spinner" id="loadingSpinner"></div>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-coins"></i>
                 </div>
+                <div class="logo-text">Zestara</div>
+            </div>
+            
+            <!-- معلومات المستخدم -->
+            <div class="user-info" id="userInfo">
                 <div class="user-details">
-                    <div class="user-name" id="userName">جاري تحميل البيانات...</div>
+                    <div class="user-name" id="userName">جار التحميل...</div>
                     <div class="user-id" id="userId">ID: ...</div>
                 </div>
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
             </div>
-            <div class="telegram-info" id="telegramInfo">
-                <i class="fab fa-telegram"></i>
-                <span>مسجل عبر التليجرام</span>
+            
+            <!-- الشريط الأفقي -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-value" id="balance">0.00</div>
+                    <div class="stat-label">رصيد</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="miningPower">1.0</div>
+                    <div class="stat-label">قوة التعدين</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="level">1</div>
+                    <div class="stat-label">المستوى</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="mining-section">
+                <h2 class="section-title">
+                    <i class="fas fa-mountain"></i>
+                    تعدين عملة Zestara
+                </h2>
+                
+                <div class="mine-display" id="mineDisplay">
+                    <div class="mine-core" id="mineCore">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                </div>
+                
+                <div class="mining-stats">
+                    <div class="mining-stat">
+                        <div class="mining-stat-value" id="coinsPerClick">0.05</div>
+                        <div class="mining-stat-label">عملة/نقرة</div>
+                    </div>
+                    <div class="mining-stat">
+                        <div class="mining-stat-value" id="autoMiner">0.0</div>
+                        <div class="mining-stat-label">تعدين تلقائي/ثانية</div>
+                    </div>
+                    <div class="mining-stat">
+                        <div class="mining-stat-value" id="nextLevel">1000</div>
+                        <div class="mining-stat-label">للوصول للمستوى التالي</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">
+                    <i class="fas fa-hammer"></i>
+                    أدوات التعدين
+                </div>
+                
+                <div class="mining-tools" id="miningTools">
+                    <!-- سيتم إضافة أدوات التعدين ديناميكيًا -->
+                </div>
+            </div>
+            
+            <div class="upgrades-section">
+                <h2 class="section-title">
+                    <i class="fas fa-arrow-up"></i>
+                    ترقيات المعدات
+                </h2>
+                
+                <div class="upgrades-list" id="upgradesList">
+                    <!-- سيتم إضافة الترقيات ديناميكيًا -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="tasks-section">
+            <h2 class="section-title">
+                <i class="fas fa-tasks"></i>
+                المهام والإنجازات
+            </h2>
+            
+            <div class="tasks-grid" id="tasksGrid">
+                <!-- سيتم إضافة المهام ديناميكيًا -->
             </div>
         </div>
 
-        <!-- قسم الخطأ -->
-        <div class="error-section" id="errorSection" style="display: none;">
-            <h3><i class="fas fa-exclamation-triangle"></i> يجب فتح اللعبة عبر التليجرام</h3>
-            <p>للتأكد من حفظ تقدمك بشكل صحيح، يرجى فتح هذه اللعبة عبر التليجرام فقط.</p>
-            <button onclick="openInTelegram()" style="margin-top: 10px;">
-                <i class="fab fa-telegram"></i> فتح في التليجرام
-            </button>
-        </div>
-        
-        <div class="stats-section">
-            <div class="stat-card">
-                <i class="fas fa-coins"></i>
-                <div class="stat-value" id="coins">0</div>
-                <div class="stat-label">العملات</div>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-mouse-pointer"></i>
-                <div class="stat-value" id="coinsPerClick">1</div>
-                <div class="stat-label">عملة/نقرة</div>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-clock"></i>
-                <div class="stat-value" id="coinsPerSecond">0</div>
-                <div class="stat-label">عملة/ثانية</div>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-level-up-alt"></i>
-                <div class="stat-value" id="level">1</div>
-                <div class="stat-label">المستوى</div>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-star"></i>
-                <div class="stat-value" id="xp">0</div>
-                <div class="stat-label">النقاط</div>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-digging"></i>
-                <div class="stat-value" id="totalMined">0</div>
-                <div class="stat-label">الإجمالي</div>
-            </div>
-        </div>
-        
-        <div class="progress-section">
-            <div class="section-header">
-                <i class="fas fa-tasks"></i>
-                <h2>تقدم المستوى</h2>
-            </div>
-            <div class="level-progress">
-                <div class="progress-bar" id="levelProgress" style="width: 0%">0%</div>
-            </div>
-            <p style="font-size: 0.8rem;">المستوى التالي: <span id="nextLevelXP">100</span> نقطة</p>
-        </div>
-        
-        <div class="mining-section">
-            <div class="crypto-display">
-                <i class="fab fa-bitcoin"></i>
-                <span id="cryptoDisplay">Bitcoin</span>
-            </div>
-            
-            <button class="mine-button" id="mineButton">
-                <i class="fas fa-hammer"></i>
-                اضغط للتعدين
-                <div class="click-value" id="clickValue">+1 عملة</div>
-            </button>
-            
-            <p style="font-size: 0.9rem;">إجمالي العملات المعدنة: <span id="totalMinedDisplay">0</span></p>
-        </div>
-        
-        <div class="miners-section">
-            <div class="section-header">
-                <i class="fas fa-robot"></i>
-                <h2>المعدنين التلقائيين</h2>
-            </div>
-            <div class="miners-grid">
-                <div class="miner-card" id="miner1">
-                    <div class="miner-icon"><i class="fas fa-tools"></i></div>
-                    <h3>معول أساسي</h3>
-                    <div class="miner-output">+<span>0.2</span>/ثانية</div>
-                    <div class="miner-cost">السعر: <span id="miner1Cost">10</span></div>
-                    <div class="miner-owned">العدد: <span id="miner1Count">0</span></div>
-                    <button id="buyMiner1"><i class="fas fa-shopping-cart"></i> شراء</button>
-                </div>
-                <div class="miner-card" id="miner2">
-                    <div class="miner-icon"><i class="fas fa-desktop"></i></div>
-                    <h3>حاسوب تعدين</h3>
-                    <div class="miner-output">+<span>1</span>/ثانية</div>
-                    <div class="miner-cost">السعر: <span id="miner2Cost">100</span></div>
-                    <div class="miner-owned">العدد: <span id="miner2Count">0</span></div>
-                    <button id="buyMiner2"><i class="fas fa-shopping-cart"></i> شراء</button>
-                </div>
-                <div class="miner-card" id="miner3">
-                    <div class="miner-icon"><i class="fas fa-server"></i></div>
-                    <h3>مزرعة تعدين</h3>
-                    <div class="miner-output">+<span>5</span>/ثانية</div>
-                    <div class="miner-cost">السعر: <span id="miner3Cost">500</span></div>
-                    <div class="miner-owned">العدد: <span id="miner3Count">0</span></div>
-                    <button id="buyMiner3"><i class="fas fa-shopping-cart"></i> شراء</button>
-                </div>
-                <div class="miner-card" id="miner4">
-                    <div class="miner-icon"><i class="fas fa-building"></i></div>
-                    <h3>مركز بيانات</h3>
-                    <div class="miner-output">+<span>25</span>/ثانية</div>
-                    <div class="miner-cost">السعر: <span id="miner4Cost">2500</span></div>
-                    <div class="miner-owned">العدد: <span id="miner4Count">0</span></div>
-                    <button id="buyMiner4"><i class="fas fa-shopping-cart"></i> شراء</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="upgrades-section">
-            <div class="section-header">
-                <i class="fas fa-bolt"></i>
-                <h2>الترقيات</h2>
-            </div>
-            
-            <div class="upgrades-grid">
-                <div class="upgrade-card" id="clickUpgrade">
-                    <div class="upgrade-header">
-                        <div class="upgrade-icon"><i class="fas fa-mouse-pointer"></i></div>
-                        <h3>تحسين النقرة</h3>
+        <!-- قسم الدعوة في الأسفل -->
+        <div class="invite-section">
+            <div class="invite-card">
+                <div class="invite-header">
+                    <div class="invite-icon">
+                        <i class="fas fa-user-plus"></i>
                     </div>
-                    <div class="upgrade-desc">يزيد قوة النقرة بمقدار +1 عملة</div>
-                    <div class="upgrade-info">
-                        <div class="upgrade-level">المستوى: <span id="clickLevel">1</span></div>
-                        <div class="upgrade-cost">السعر: <span id="clickCost">50</span></div>
+                    <div class="invite-title">دعوة الأصدقاء</div>
+                </div>
+                <div class="invite-description">
+                    ادعُ أصدقائك واحصل على 200 ZST لكل دعوة ناجحة! كلما زاد عدد الأصدقاء، زادت أرباحك!
+                </div>
+                <button class="invite-btn" id="inviteBtn">
+                    <i class="fas fa-share-alt"></i>
+                    دعوة الأصدقاء
+                </button>
+                <div class="invite-stats">
+                    <div class="invite-stat">
+                        <div class="invite-stat-value" id="invitesCount">0</div>
+                        <div class="invite-stat-label">عدد الدعوات</div>
                     </div>
-                    <button id="buyClickUpgrade"><i class="fas fa-level-up-alt"></i> ترقية</button>
-                </div>
-                
-                <div class="upgrade-card" id="minerUpgrade">
-                    <div class="upgrade-header">
-                        <div class="upgrade-icon"><i class="fas fa-industry"></i></div>
-                        <h3>تحسين المعدنين</h3>
+                    <div class="invite-stat">
+                        <div class="invite-stat-value" id="invitesReward">0</div>
+                        <div class="invite-stat-label">مكافآت الدعوات</div>
                     </div>
-                    <div class="upgrade-desc">يزيد إنتاج جميع المعدنين بنسبة 10%</div>
-                    <div class="upgrade-info">
-                        <div class="upgrade-level">المستوى: <span id="minerUpgradeLevel">1</span></div>
-                        <div class="upgrade-cost">السعر: <span id="minerUpgradeCost">100</span></div>
-                    </div>
-                    <button id="buyMinerUpgrade"><i class="fas fa-level-up-alt"></i> ترقية</button>
-                </div>
-                
-                <div class="upgrade-card" id="cryptoUpgrade">
-                    <div class="upgrade-header">
-                        <div class="upgrade-icon"><i class="fas fa-exchange-alt"></i></div>
-                        <h3>تغيير العملة</h3>
-                    </div>
-                    <div class="upgrade-desc">يفتح عملة رقمية جديدة مع مضاعفة الأرباح</div>
-                    <div class="upgrade-info">
-                        <div class="upgrade-level">العملة: <span id="currentCrypto">Bitcoin</span></div>
-                        <div class="upgrade-cost">السعر: <span id="cryptoUpgradeCost">1000</span></div>
-                    </div>
-                    <button id="buyCryptoUpgrade"><i class="fas fa-level-up-alt"></i> ترقية</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="achievements-section">
-            <div class="section-header">
-                <i class="fas fa-trophy"></i>
-                <h2>الإنجازات</h2>
-            </div>
-            
-            <div class="achievements-grid">
-                <div class="achievement-card" id="achievement1">
-                    <div class="achievement-icon">🥉</div>
-                    <p>أول 100 عملة</p>
-                </div>
-                <div class="achievement-card" id="achievement2">
-                    <div class="achievement-icon">🥈</div>
-                    <p>أول معدة تلقائية</p>
-                </div>
-                <div class="achievement-card" id="achievement3">
-                    <div class="achievement-icon">🥇</div>
-                    <p>الوصول للمستوى 10</p>
-                </div>
-                <div class="achievement-card" id="achievement4">
-                    <div class="achievement-icon">💎</div>
-                    <p>10,000 عملة</p>
-                </div>
-                <div class="achievement-card" id="achievement5">
-                    <div class="achievement-icon">🚀</div>
-                    <p>مركز بيانات</p>
-                </div>
-                <div class="achievement-card" id="achievement6">
-                    <div class="achievement-icon">👑</div>
-                    <p>مليونير التعدين</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- نافذة الدعوة -->
+    <div class="invite-modal" id="inviteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">دعوة الأصدقاء</div>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="referral-link">
+                <div class="link-text" id="referralLink">https://zestara.com/invite?ref=USER123</div>
+                <button class="copy-btn" id="copyLink">
+                    <i class="fas fa-copy"></i>
+                    نسخ
+                </button>
+            </div>
+            <div class="social-share">
+                <button class="share-btn whatsapp" data-platform="whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    واتساب
+                </button>
+                <button class="share-btn telegram" data-platform="telegram">
+                    <i class="fab fa-telegram"></i>
+                    تليجرام
+                </button>
+                <button class="share-btn facebook" data-platform="facebook">
+                    <i class="fab fa-facebook"></i>
+                    فيسبوك
+                </button>
+                <button class="share-btn twitter" data-platform="twitter">
+                    <i class="fab fa-twitter"></i>
+                    تويتر
+                </button>
+            </div>
+            <div class="invite-description" style="text-align: center; margin-top: 15px;">
+                ستحصل على 200 ZST لكل صديق ينضم عبر رابطك!
+            </div>
+        </div>
+    </div>
     
-    <div class="message" id="message"></div>
-    <div class="save-indicator" id="saveIndicator">تم الحفظ</div>
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">تم تعدين العملات بنجاح!</span>
+    </div>
 
     <script>
-        // تهيئة Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBX8v0qIVjG-Z46fVDeEUDKcPxa_FQF9Qc",
-            authDomain: "bnak-belaiba.firebaseapp.com",
-            projectId: "bnak-belaiba",
-            storageBucket: "bnak-belaiba.firebasestorage.app",
-            messagingSenderId: "286736432059",
-            appId: "1:286736432059:web:ec1ed4292850f00008229e"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // حالة اللعبة
-        const gameState = {
-            coins: 0,
-            coinsPerClick: 1,
-            coinsPerSecond: 0,
+        // بيانات اللعبة الأساسية
+        const defaultGameData = {
+            balance: 0,
+            miningPower: 1,
             level: 1,
-            xp: 0,
-            nextLevelXP: 100,
-            totalMined: 0,
-            
-            // المعدنين التلقائيين
-            miners: [
-                { id: 1, name: "معول أساسي", baseOutput: 0.2, count: 0, baseCost: 10, cost: 10 },
-                { id: 2, name: "حاسوب تعدين", baseOutput: 1, count: 0, baseCost: 100, cost: 100 },
-                { id: 3, name: "مزرعة تعدين", baseOutput: 5, count: 0, baseCost: 500, cost: 500 },
-                { id: 4, name: "مركز بيانات", baseOutput: 25, count: 0, baseCost: 2500, cost: 2500 }
+            coinsPerClick: 0.05,
+            autoMiner: 0,
+            nextLevel: 1000,
+            invitesCount: 0,
+            invitesReward: 0,
+            referralCode: '',
+            upgrades: [
+                { 
+                    id: 1, 
+                    name: "بطاقة رسوميات أساسية", 
+                    icon: "fas fa-microchip", 
+                    cost: 100,
+                    power: 0.1,
+                    owned: 0,
+                    description: "زيادة قوة التعدين الأساسية"
+                },
+                { 
+                    id: 2, 
+                    name: "خادم تعدين", 
+                    icon: "fas fa-server", 
+                    cost: 500,
+                    power: 0.5,
+                    owned: 0,
+                    description: "مضاعفة قوة التعدين"
+                },
+                { 
+                    id: 3, 
+                    name: "مزرعة التعدين", 
+                    icon: "fas fa-industry", 
+                    cost: 2000,
+                    power: 2,
+                    owned: 0,
+                    description: "تعدين متقدم بإنتاجية عالية"
+                },
+                { 
+                    id: 4, 
+                    name: "مركز البيانات", 
+                    icon: "fas fa-database", 
+                    cost: 10000,
+                    power: 10,
+                    owned: 0,
+                    description: "أقصى طاقة تعدين متاحة"
+                },
+                { 
+                    id: 5, 
+                    name: "التعدين السحابي", 
+                    icon: "fas fa-cloud", 
+                    cost: 50000,
+                    power: 50,
+                    owned: 0,
+                    description: "تعدين باستخدام قوة الحوسبة السحابية"
+                }
             ],
-            
-            // الترقيات
-            upgrades: {
-                click: { level: 1, cost: 50, baseCost: 50 },
-                miner: { level: 1, cost: 100, baseCost: 100 },
-                crypto: { level: 1, cost: 1000, baseCost: 1000 }
-            },
-            
-            // العملات الرقمية
-            cryptocurrencies: [
-                { name: "Bitcoin", multiplier: 1, icon: "fab fa-bitcoin" },
-                { name: "Ethereum", multiplier: 2, icon: "fab fa-ethereum" },
-                { name: "Litecoin", multiplier: 3, icon: "fab fa-bitcoin" },
-                { name: "Ripple", multiplier: 5, icon: "fas fa-x" },
-                { name: "Cardano", multiplier: 8, icon: "fas fa-chart-line" },
-                { name: "Polkadot", multiplier: 12, icon: "fas fa-circle" },
-                { name: "Dogecoin", multiplier: 20, icon: "fab fa-reddit" }
+            tools: [
+                {
+                    id: 1,
+                    name: "فأس التعدين",
+                    icon: "fas fa-hammer",
+                    cost: 50,
+                    multiplier: 1.1,
+                    owned: false,
+                    description: "زيادة عائد النقرات بنسبة 10%"
+                },
+                {
+                    id: 2,
+                    name: "الحفار الآلي",
+                    icon: "fas fa-robot",
+                    cost: 250,
+                    multiplier: 1.2,
+                    owned: false,
+                    description: "زيادة عائد النقرات بنسبة 20%"
+                },
+                {
+                    id: 3,
+                    name: "المعدن الذكي",
+                    icon: "fas fa-brain",
+                    cost: 1000,
+                    multiplier: 1.5,
+                    owned: false,
+                    description: "زيادة عائد النقرات بنسبة 50%"
+                }
             ],
-            currentCrypto: 0,
-            
-            // الإنجازات
-            achievements: {
-                first100: false,
-                firstMiner: false,
-                level10: false,
-                tenThousand: false,
-                dataCenter: false,
-                millionaire: false
-            },
-            
-            // بيانات المستخدم
-            telegramUser: null,
-            userId: null,
-            lastSave: null
+            tasks: [
+                {
+                    id: 1,
+                    name: "التعدين الأولي",
+                    description: "اجمع 50 عملات",
+                    target: 50,
+                    progress: 0,
+                    reward: 10,
+                    completed: false,
+                    claimed: false
+                },
+                {
+                    id: 2,
+                    name: "معدن مبتدئ",
+                    description: "اجمع 250 عملة",
+                    target: 250,
+                    progress: 0,
+                    reward: 50,
+                    completed: false,
+                    claimed: false
+                },
+                {
+                    id: 3,
+                    name: "مستثمر صغير",
+                    description: "اشترِ 3 ترقيات",
+                    target: 3,
+                    progress: 0,
+                    reward: 100,
+                    completed: false,
+                    claimed: false
+                },
+                {
+                    id: 4,
+                    name: "محترف التعدين",
+                    description: "الوصول للمستوى 10",
+                    target: 10,
+                    progress: 1,
+                    reward: 500,
+                    completed: false,
+                    claimed: false
+                },
+                {
+                    id: 5,
+                    name: "مليونير العملات",
+                    description: "اجمع 10000 عملة",
+                    target: 10000,
+                    progress: 0,
+                    reward: 2000,
+                    completed: false,
+                    claimed: false
+                },
+                {
+                    id: 6,
+                    name: "سفير Zestara",
+                    description: "ادعُ 5 أصدقاء",
+                    target: 5,
+                    progress: 0,
+                    reward: 1000,
+                    completed: false,
+                    claimed: false
+                }
+            ],
+            firstLogin: new Date().toISOString(),
+            lastLogin: new Date().toISOString(),
+            totalPlayTime: 0
         };
 
-        // العناصر
-        const coinsElement = document.getElementById('coins');
-        const coinsPerClickElement = document.getElementById('coinsPerClick');
-        const coinsPerSecondElement = document.getElementById('coinsPerSecond');
-        const levelElement = document.getElementById('level');
-        const xpElement = document.getElementById('xp');
-        const nextLevelXPElement = document.getElementById('nextLevelXP');
-        const levelProgressElement = document.getElementById('levelProgress');
-        const totalMinedElement = document.getElementById('totalMined');
-        const totalMinedDisplayElement = document.getElementById('totalMinedDisplay');
-        const cryptoDisplayElement = document.getElementById('cryptoDisplay');
-        const mineButton = document.getElementById('mineButton');
-        const clickValueElement = document.getElementById('clickValue');
-        
-        // عناصر المستخدم
-        const userInfo = document.getElementById('userInfo');
-        const userName = document.getElementById('userName');
-        const userId = document.getElementById('userId');
-        const userAvatar = document.getElementById('userAvatar');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const telegramInfo = document.getElementById('telegramInfo');
-        const errorSection = document.getElementById('errorSection');
-        
-        // عناصر المعدنين
-        const miner1CostElement = document.getElementById('miner1Cost');
-        const miner1CountElement = document.getElementById('miner1Count');
-        const buyMiner1Btn = document.getElementById('buyMiner1');
-        
-        const miner2CostElement = document.getElementById('miner2Cost');
-        const miner2CountElement = document.getElementById('miner2Count');
-        const buyMiner2Btn = document.getElementById('buyMiner2');
-        
-        const miner3CostElement = document.getElementById('miner3Cost');
-        const miner3CountElement = document.getElementById('miner3Count');
-        const buyMiner3Btn = document.getElementById('buyMiner3');
-        
-        const miner4CostElement = document.getElementById('miner4Cost');
-        const miner4CountElement = document.getElementById('miner4Count');
-        const buyMiner4Btn = document.getElementById('buyMiner4');
-        
-        // عناصر الترقيات
-        const clickLevelElement = document.getElementById('clickLevel');
-        const clickCostElement = document.getElementById('clickCost');
-        const buyClickUpgradeBtn = document.getElementById('buyClickUpgrade');
-        
-        const minerUpgradeLevelElement = document.getElementById('minerUpgradeLevel');
-        const minerUpgradeCostElement = document.getElementById('minerUpgradeCost');
-        const buyMinerUpgradeBtn = document.getElementById('buyMinerUpgrade');
-        
-        const currentCryptoElement = document.getElementById('currentCrypto');
-        const cryptoUpgradeCostElement = document.getElementById('cryptoUpgradeCost');
-        const buyCryptoUpgradeBtn = document.getElementById('buyCryptoUpgrade');
-        
-        const messageElement = document.getElementById('message');
-        const saveIndicator = document.getElementById('saveIndicator');
+        // بيانات المستخدم
+        let userData = {
+            telegramId: '',
+            firstName: '',
+            lastName: '',
+            username: '',
+            gameData: JSON.parse(JSON.stringify(defaultGameData))
+        };
 
-        // دالة لفتح اللعبة في التليجرام
-        function openInTelegram() {
-            const botUsername = 'your_bot_username'; // ضع اسم البوت هنا
-            const gameUrl = window.location.href;
-            const telegramUrl = `https://t.me/${botUsername}?start=game`;
-            window.open(telegramUrl, '_blank');
-        }
-
-        // الحصول على بيانات المستخدم من التليجرام
-        async function getTelegramUserData() {
-            return new Promise((resolve) => {
-                // الطريقة 1: من خلال Telegram WebApp
-                if (window.Telegram && window.Telegram.WebApp) {
-                    const tg = window.Telegram.WebApp;
-                    const user = tg.initDataUnsafe.user;
-                    
-                    if (user && user.id) {
-                        console.log('تم العثور على مستخدم التليجرام:', user);
-                        resolve(user);
-                        return;
-                    }
-                }
-                
-                // الطريقة 2: من خلال parameters في الرابط
-                const urlParams = new URLSearchParams(window.location.search);
-                const tgWebAppData = urlParams.get('tgWebAppData');
-                
-                if (tgWebAppData) {
-                    try {
-                        const decodedData = decodeURIComponent(tgWebAppData);
-                        const params = new URLSearchParams(decodedData);
-                        const userJson = params.get('user');
-                        
-                        if (userJson) {
-                            const user = JSON.parse(userJson);
-                            console.log('تم العثور على مستخدم من الرابط:', user);
-                            resolve(user);
-                            return;
-                        }
-                    } catch (error) {
-                        console.error('خطأ في تحليل بيانات التليجرام:', error);
-                    }
-                }
-                
-                // الطريقة 3: من خلال localStorage (للمستخدمين العائدين)
-                const savedUserData = localStorage.getItem('telegramUserData');
-                if (savedUserData) {
-                    try {
-                        const user = JSON.parse(savedUserData);
-                        console.log('تم تحميل بيانات المستخدم من localStorage:', user);
-                        resolve(user);
-                        return;
-                    } catch (error) {
-                        console.error('خطأ في تحليل بيانات localStorage:', error);
-                    }
-                }
-                
-                // إذا لم نجد أي بيانات، نطلب من المستخدم فتح اللعبة في التليجرام
-                console.log('لم يتم العثور على بيانات المستخدم');
-                resolve(null);
-            });
-        }
-
-        // استخراج بيانات المستخدم من initData
-        function parseInitData(initData) {
+        // تهيئة Telegram Web App
+        let tg = null;
+        
+        function initTelegram() {
             try {
-                const params = new URLSearchParams(initData);
-                const userStr = params.get('user');
-                if (userStr) {
-                    return JSON.parse(userStr);
+                tg = window.Telegram.WebApp;
+                
+                if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const telegramUser = tg.initDataUnsafe.user;
+                    
+                    userData.telegramId = telegramUser.id;
+                    userData.firstName = telegramUser.first_name || '';
+                    userData.lastName = telegramUser.last_name || '';
+                    userData.username = telegramUser.username || '';
+                    
+                    // إنشاء كود الدعوة بناءً على معرف المستخدم
+                    userData.gameData.referralCode = 'USER' + telegramUser.id;
+                    
+                    // عرض معلومات المستخدم
+                    displayUserInfo();
+                    
+                    // تحميل بيانات المستخدم
+                    loadUserData();
+                    
+                    // توسيع التطبيق لملء الشاشة
+                    tg.expand();
+                    
+                    return true;
+                } else {
+                    // وضع التطوير (عند التشغيل خارج Telegram)
+                    setupDevelopmentMode();
+                    return false;
                 }
             } catch (error) {
-                console.error('Error parsing init data:', error);
+                console.error('خطأ في تهيئة Telegram:', error);
+                setupDevelopmentMode();
+                return false;
             }
-            return null;
         }
 
-        // تهيئة اللعبة
-        async function initGame() {
-            // محاولة الحصول على بيانات المستخدم من التليجرام
-            const telegramUser = await getTelegramUserData();
+        // وضع التطوير (عند التشغيل خارج Telegram)
+        function setupDevelopmentMode() {
+            console.log('وضع التطوير: التشغيل خارج Telegram');
             
-            if (telegramUser) {
-                // إذا تم الحصول على بيانات التليجرام بنجاح
-                gameState.telegramUser = telegramUser;
-                gameState.userId = telegramUser.id.toString();
+            // بيانات افتراضية للمستخدم
+            userData.telegramId = 'dev_' + Math.floor(Math.random() * 10000);
+            userData.firstName = 'مستخدم';
+            userData.lastName = 'تجريبي';
+            userData.username = 'testuser';
+            userData.gameData.referralCode = 'DEV' + Math.floor(1000 + Math.random() * 9000);
+            
+            displayUserInfo();
+            loadUserData();
+        }
+
+        // عرض معلومات المستخدم
+        function displayUserInfo() {
+            const userNameEl = document.getElementById('userName');
+            const userIdEl = document.getElementById('userId');
+            const userAvatarEl = document.getElementById('userAvatar');
+            
+            if (userNameEl) {
+                const fullName = [userData.firstName, userData.lastName].filter(Boolean).join(' ') || 'مستخدم';
+                userNameEl.textContent = fullName;
+            }
+            
+            if (userIdEl) {
+                userIdEl.textContent = `ID: ${userData.telegramId}`;
+            }
+            
+            if (userAvatarEl) {
+                // استخدام الأحرف الأولى من الاسم أو اسم المستخدم
+                const displayName = userData.firstName || userData.username || 'م';
+                const firstChar = displayName.charAt(0);
+                userAvatarEl.innerHTML = firstChar;
                 
-                // حفظ بيانات المستخدم في localStorage
-                localStorage.setItem('telegramUserData', JSON.stringify(telegramUser));
+                // لون خلفية عشوائي ولكن متسق بناءً على ID
+                const colors = ['#3a86ff', '#8338ec', '#ff006e', '#38b000', '#ff9e00'];
+                const colorIndex = parseInt(userData.telegramId) % colors.length || 0;
+                userAvatarEl.style.background = colors[colorIndex];
+            }
+        }
+
+        // تخزين بيانات المستخدم
+        function saveUserData() {
+            try {
+                // تحديث وقت آخر تسجيل دخول
+                userData.gameData.lastLogin = new Date().toISOString();
+                
+                // استخدام معرف Telegram كمفتاح للتخزين
+                const storageKey = `zestara_user_${userData.telegramId}`;
+                localStorage.setItem(storageKey, JSON.stringify(userData));
+                
+                // تخزين معرف المستخدم النشط
+                localStorage.setItem('current_user_id', userData.telegramId);
+                
+                console.log('تم حفظ بيانات المستخدم:', userData.telegramId);
+            } catch (error) {
+                console.error('خطأ في حفظ بيانات المستخدم:', error);
+            }
+        }
+
+        // تحميل بيانات المستخدم
+        function loadUserData() {
+            try {
+                const storageKey = `zestara_user_${userData.telegramId}`;
+                const savedData = localStorage.getItem(storageKey);
+                
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    
+                    // دمج البيانات المحفوظة مع البيانات الافتراضية
+                    userData.gameData = { ...defaultGameData, ...parsedData.gameData };
+                    
+                    // تحديث وقت آخر تسجيل دخول
+                    userData.gameData.lastLogin = new Date().toISOString();
+                    
+                    console.log('تم تحميل بيانات المستخدم:', userData.telegramId);
+                } else {
+                    // مستخدم جديد - استخدام البيانات الافتراضية
+                    userData.gameData = JSON.parse(JSON.stringify(defaultGameData));
+                    userData.gameData.referralCode = 'USER' + userData.telegramId;
+                    userData.gameData.firstLogin = new Date().toISOString();
+                    
+                    console.log('مستخدم جديد:', userData.telegramId);
+                }
                 
                 // تحديث واجهة المستخدم
-                updateUserInterface(telegramUser);
-                showMessage(`مرحباً ${telegramUser.first_name || 'مستخدم التليجرام'}!`);
-                
-                // إخفاء قسم الخطأ
-                errorSection.style.display = 'none';
-                
-                // تحميل بيانات اللعبة
                 updateUI();
-                loadGame();
+                renderUpgrades();
+                renderTools();
+                renderTasks();
                 
-                // إضافة مستمعي الأحداث
-                setupEventListeners();
-                
-                // بدء التعدين التلقائي
-                setInterval(autoMine, 1000);
-                
-            } else {
-                // إذا لم نجد بيانات المستخدم
-                showError();
-            }
-        }
-
-        // إعداد مستمعي الأحداث
-        function setupEventListeners() {
-            mineButton.addEventListener('click', mine);
-            buyMiner1Btn.addEventListener('click', () => buyMiner(0));
-            buyMiner2Btn.addEventListener('click', () => buyMiner(1));
-            buyMiner3Btn.addEventListener('click', () => buyMiner(2));
-            buyMiner4Btn.addEventListener('click', () => buyMiner(3));
-            
-            buyClickUpgradeBtn.addEventListener('click', buyClickUpgrade);
-            buyMinerUpgradeBtn.addEventListener('click', buyMinerUpgrade);
-            buyCryptoUpgradeBtn.addEventListener('click', buyCryptoUpgrade);
-        }
-
-        // عرض خطأ
-        function showError() {
-            errorSection.style.display = 'block';
-            userInfo.style.display = 'none';
-            
-            // إخفاء أقسام اللعبة
-            document.querySelectorAll('.stats-section, .progress-section, .mining-section, .miners-section, .upgrades-section, .achievements-section').forEach(section => {
-                section.style.display = 'none';
-            });
-        }
-
-        // تحديث واجهة معلومات المستخدم
-        function updateUserInterface(user) {
-            // إخفاء spinner التحميل
-            loadingSpinner.style.display = 'none';
-            
-            // تحديث الاسم
-            const fullName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            userName.textContent = fullName;
-            
-            // تحديث الـ ID الحقيقي
-            userId.textContent = `ID: ${user.id}`;
-            
-            // تحديث الصورة الرمزية
-            userAvatar.textContent = user.first_name ? user.first_name.charAt(0).toUpperCase() : 'U';
-            userAvatar.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
-            
-            // تحديث معلومات التليجرام
-            if (user.username) {
-                telegramInfo.innerHTML = `<i class="fab fa-telegram"></i> @${user.username}`;
-            }
-        }
-
-        // باقي دوال اللعبة تبقى كما هي
-        // [جميع الدوال الأخرى تبقى نفسها بدون تغيير]
-        // saveUserData, loadUserData, mine, autoMine, buyMiner, etc...
-
-        // حفظ بيانات المستخدم في Firebase
-        async function saveUserData() {
-            if (!gameState.userId) {
-                console.error('لا يوجد معرف مستخدم للحفظ');
-                return;
-            }
-            
-            try {
-                const userData = {
-                    ...gameState,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                    telegram_username: gameState.telegramUser?.username || 'unknown',
-                    telegram_first_name: gameState.telegramUser?.first_name || 'مستخدم',
-                    created: gameState.created || new Date().toISOString()
-                };
-                
-                // إزالة بيانات التليجرام الحساسة قبل الحفظ
-                delete userData.telegramUser;
-                
-                await db.collection('users').doc(gameState.userId).set(userData, { merge: true });
-                showSaveIndicator();
-                console.log('تم حفظ البيانات للمستخدم:', gameState.userId);
             } catch (error) {
-                console.error('خطأ في حفظ البيانات:', error);
+                console.error('خطأ في تحميل بيانات المستخدم:', error);
+                userData.gameData = JSON.parse(JSON.stringify(defaultGameData));
             }
         }
 
-        // تحميل بيانات المستخدم من Firebase
-        async function loadUserData() {
-            if (!gameState.userId) {
-                console.error('لا يوجد معرف مستخدم للتحميل');
-                return;
-            }
-            
-            try {
-                const doc = await db.collection('users').doc(gameState.userId).get();
-                if (doc.exists) {
-                    const userData = doc.data();
-                    // الحفاظ على بيانات التليجرام الأصلية
-                    const telegramUser = gameState.telegramUser;
-                    Object.assign(gameState, userData);
-                    gameState.telegramUser = telegramUser;
-                    updateUI();
-                    updateAchievementsUI();
-                    showMessage('تم تحميل بياناتك من السحابة!');
-                    console.log('تم تحميل بيانات المستخدم:', gameState.userId);
-                } else {
-                    // إذا كان المستخدم جديداً، احفظ بياناته لأول مرة
-                    await saveUserData();
-                    showMessage('مرحباً! تم إنشاء حساب جديد لك');
-                }
-            } catch (error) {
-                console.error('خطأ في تحميل البيانات:', error);
-            }
+        // الحصول على بيانات اللعبة الحالية
+        function getGameData() {
+            return userData.gameData;
         }
 
-        // التعدين بالنقر
-        function mine() {
-            if (!gameState.userId) {
-                showMessage('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            const cryptoMultiplier = gameState.cryptocurrencies[gameState.currentCrypto].multiplier;
-            const coinsGained = gameState.coinsPerClick * cryptoMultiplier;
-            
-            gameState.coins += coinsGained;
-            gameState.totalMined += coinsGained;
-            gameState.xp += coinsGained / 10;
-            
-            checkLevelUp();
-            updateUI();
-            checkAchievements();
-            
-            // تأثير مرئي
-            mineButton.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                mineButton.style.transform = 'scale(1)';
-            }, 100);
-            
-            showMessage(`+${coinsGained} عملة!`);
-        }
-
-        // التعدين التلقائي
-        function autoMine() {
-            if (!gameState.userId) return;
-
-            if (gameState.coinsPerSecond > 0) {
-                const cryptoMultiplier = gameState.cryptocurrencies[gameState.currentCrypto].multiplier;
-                const coinsGained = gameState.coinsPerSecond * cryptoMultiplier;
-                
-                gameState.coins += coinsGained;
-                gameState.totalMined += coinsGained;
-                gameState.xp += coinsGained / 20;
-                
-                checkLevelUp();
-                updateUI();
-                checkAchievements();
-            }
-        }
-
-        // شراء معدة تعدين
-        function buyMiner(index) {
-            if (!gameState.userId) {
-                showMessage('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            const miner = gameState.miners[index];
-            
-            if (gameState.coins >= miner.cost) {
-                gameState.coins -= miner.cost;
-                miner.count++;
-                
-                // زيادة سعر المعدة
-                miner.cost = Math.floor(miner.baseCost * Math.pow(1.15, miner.count));
-                
-                // تحديث إنتاج العملات في الثانية
-                updateCoinsPerSecond();
-                
-                updateUI();
-                showMessage(`اشتريت ${miner.name}!`);
-                
-                // فتح إنجاز أول معدة
-                if (!gameState.achievements.firstMiner) {
-                    gameState.achievements.firstMiner = true;
-                    document.getElementById('achievement2').classList.add('unlocked');
-                    showMessage('إنجاز مفتوح: أول معدة تلقائية!');
-                }
-            } else {
-                showMessage('لا تملك عملات كافية!', 'error');
-            }
-        }
-
-        // ترقية قوة النقرة
-        function buyClickUpgrade() {
-            if (!gameState.userId) {
-                showMessage('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            const upgrade = gameState.upgrades.click;
-            
-            if (gameState.coins >= upgrade.cost) {
-                gameState.coins -= upgrade.cost;
-                upgrade.level++;
-                gameState.coinsPerClick = upgrade.level;
-                
-                // زيادة سعر الترقية
-                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.level - 1));
-                
-                updateUI();
-                showMessage('تم ترقية قوة النقرة!');
-            } else {
-                showMessage('لا تملك عملات كافية!', 'error');
-            }
-        }
-
-        // ترقية المعدنين
-        function buyMinerUpgrade() {
-            if (!gameState.userId) {
-                showMessage('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            const upgrade = gameState.upgrades.miner;
-            
-            if (gameState.coins >= upgrade.cost) {
-                gameState.coins -= upgrade.cost;
-                upgrade.level++;
-                
-                // زيادة سعر الترقية
-                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.8, upgrade.level - 1));
-                
-                updateUI();
-                showMessage('تم ترقية جميع المعدنين!');
-            } else {
-                showMessage('لا تملك عملات كافية!', 'error');
-            }
-        }
-
-        // تغيير العملة الرقمية
-        function buyCryptoUpgrade() {
-            if (!gameState.userId) {
-                showMessage('يجب تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            const upgrade = gameState.upgrades.crypto;
-            
-            if (gameState.coins >= upgrade.cost && gameState.currentCrypto < gameState.cryptocurrencies.length - 1) {
-                gameState.coins -= upgrade.cost;
-                gameState.currentCrypto++;
-                upgrade.level++;
-                
-                // زيادة سعر الترقية
-                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(2.5, upgrade.level - 1));
-                
-                updateUI();
-                showMessage(`الآن تقوم بتعدين ${gameState.cryptocurrencies[gameState.currentCrypto].name}!`);
-            } else if (gameState.currentCrypto >= gameState.cryptocurrencies.length - 1) {
-                showMessage('لقد وصلت لأقوى عملة رقمية!', 'error');
-            } else {
-                showMessage('لا تملك عملات كافية!', 'error');
-            }
-        }
-
-        // تحديث إنتاج العملات في الثانية
-        function updateCoinsPerSecond() {
-            let total = 0;
-            const minerMultiplier = 1 + (gameState.upgrades.miner.level - 1) * 0.1;
-            
-            gameState.miners.forEach(miner => {
-                total += miner.count * miner.baseOutput * minerMultiplier;
-            });
-            
-            gameState.coinsPerSecond = total;
-        }
-
-        // التحقق من ارتفاع المستوى
-        function checkLevelUp() {
-            if (gameState.xp >= gameState.nextLevelXP) {
-                gameState.level++;
-                gameState.nextLevelXP = Math.floor(gameState.nextLevelXP * 1.5);
-                
-                showMessage(`تهانينا! لقد وصلت للمستوى ${gameState.level}`, 'level');
-                
-                // فتح إنجاز المستوى 10
-                if (gameState.level >= 10 && !gameState.achievements.level10) {
-                    gameState.achievements.level10 = true;
-                    document.getElementById('achievement3').classList.add('unlocked');
-                    showMessage('إنجاز مفتوح: الوصول للمستوى 10!');
-                }
-            }
-        }
-
-        // التحقق من الإنجازات
-        function checkAchievements() {
-            // إنجاز أول 100 عملة
-            if (gameState.totalMined >= 100 && !gameState.achievements.first100) {
-                gameState.achievements.first100 = true;
-                document.getElementById('achievement1').classList.add('unlocked');
-                showMessage('إنجاز مفتوح: أول 100 عملة!');
-            }
-            
-            // إنجاز 10,000 عملة
-            if (gameState.totalMined >= 10000 && !gameState.achievements.tenThousand) {
-                gameState.achievements.tenThousand = true;
-                document.getElementById('achievement4').classList.add('unlocked');
-                showMessage('إنجاز مفتوح: 10,000 عملة!');
-            }
-            
-            // إنجاز مركز بيانات
-            if (gameState.miners[3].count > 0 && !gameState.achievements.dataCenter) {
-                gameState.achievements.dataCenter = true;
-                document.getElementById('achievement5').classList.add('unlocked');
-                showMessage('إنجاز مفتوح: مركز بيانات!');
-            }
-            
-            // إنجاز المليونير
-            if (gameState.totalMined >= 1000000 && !gameState.achievements.millionaire) {
-                gameState.achievements.millionaire = true;
-                document.getElementById('achievement6').classList.add('unlocked');
-                showMessage('إنجاز مفتوح: مليونير التعدين!');
-            }
+        // تحديث بيانات اللعبة
+        function updateGameData(newData) {
+            userData.gameData = { ...userData.gameData, ...newData };
+            saveUserData();
         }
 
         // تحديث واجهة المستخدم
         function updateUI() {
-            // تحديث الإحصائيات
-            coinsElement.textContent = Math.floor(gameState.coins);
-            coinsPerClickElement.textContent = gameState.coinsPerClick;
-            coinsPerSecondElement.textContent = gameState.coinsPerSecond.toFixed(1);
-            levelElement.textContent = gameState.level;
-            xpElement.textContent = Math.floor(gameState.xp);
-            nextLevelXPElement.textContent = gameState.nextLevelXP;
-            totalMinedElement.textContent = Math.floor(gameState.totalMined);
-            totalMinedDisplayElement.textContent = Math.floor(gameState.totalMined);
+            const gameData = getGameData();
             
-            // تحديث شريط التقدم
-            const progressPercent = (gameState.xp / gameState.nextLevelXP) * 100;
-            levelProgressElement.style.width = `${Math.min(progressPercent, 100)}%`;
-            levelProgressElement.textContent = `${Math.min(progressPercent, 100).toFixed(1)}%`;
+            // تحديث العناصر
+            const balanceEl = document.getElementById('balance');
+            const miningPowerEl = document.getElementById('miningPower');
+            const levelEl = document.getElementById('level');
+            const coinsPerClickEl = document.getElementById('coinsPerClick');
+            const autoMinerEl = document.getElementById('autoMiner');
+            const nextLevelEl = document.getElementById('nextLevel');
+            const invitesCount = document.getElementById('invitesCount');
+            const invitesReward = document.getElementById('invitesReward');
             
-            // تحديث عرض العملة
-            cryptoDisplayElement.textContent = gameState.cryptocurrencies[gameState.currentCrypto].name;
-            clickValueElement.textContent = `+${gameState.coinsPerClick * gameState.cryptocurrencies[gameState.currentCrypto].multiplier} عملة`;
+            if (balanceEl) balanceEl.textContent = gameData.balance.toFixed(2);
+            if (miningPowerEl) miningPowerEl.textContent = gameData.miningPower.toFixed(1);
+            if (levelEl) levelEl.textContent = gameData.level;
+            if (coinsPerClickEl) coinsPerClickEl.textContent = (gameData.coinsPerClick * calculateToolMultiplier()).toFixed(2);
+            if (autoMinerEl) autoMinerEl.textContent = gameData.autoMiner.toFixed(2);
+            if (nextLevelEl) nextLevelEl.textContent = gameData.nextLevel;
+            if (invitesCount) invitesCount.textContent = gameData.invitesCount;
+            if (invitesReward) invitesReward.textContent = gameData.invitesReward;
             
-            // تحديث المعدنين
-            miner1CostElement.textContent = gameState.miners[0].cost;
-            miner1CountElement.textContent = gameState.miners[0].count;
-            buyMiner1Btn.disabled = gameState.coins < gameState.miners[0].cost;
+            // تحديث رابط الدعوة
+            const referralLink = document.getElementById('referralLink');
+            if (referralLink) {
+                referralLink.textContent = generateReferralLink();
+            }
             
-            miner2CostElement.textContent = gameState.miners[1].cost;
-            miner2CountElement.textContent = gameState.miners[1].count;
-            buyMiner2Btn.disabled = gameState.coins < gameState.miners[1].cost;
-            
-            miner3CostElement.textContent = gameState.miners[2].cost;
-            miner3CountElement.textContent = gameState.miners[2].count;
-            buyMiner3Btn.disabled = gameState.coins < gameState.miners[2].cost;
-            
-            miner4CostElement.textContent = gameState.miners[3].cost;
-            miner4CountElement.textContent = gameState.miners[3].count;
-            buyMiner4Btn.disabled = gameState.coins < gameState.miners[3].cost;
-            
-            // تحديث الترقيات
-            clickLevelElement.textContent = gameState.upgrades.click.level;
-            clickCostElement.textContent = gameState.upgrades.click.cost;
-            buyClickUpgradeBtn.disabled = gameState.coins < gameState.upgrades.click.cost;
-            
-            minerUpgradeLevelElement.textContent = gameState.upgrades.miner.level;
-            minerUpgradeCostElement.textContent = gameState.upgrades.miner.cost;
-            buyMinerUpgradeBtn.disabled = gameState.coins < gameState.upgrades.miner.cost;
-            
-            currentCryptoElement.textContent = gameState.cryptocurrencies[gameState.currentCrypto].name;
-            cryptoUpgradeCostElement.textContent = gameState.upgrades.crypto.cost;
-            buyCryptoUpgradeBtn.disabled = gameState.coins < gameState.upgrades.crypto.cost || 
-                                          gameState.currentCrypto >= gameState.cryptocurrencies.length - 1;
-            
-            // تحديث إنتاج العملات في الثانية
-            updateCoinsPerSecond();
-            
-            // حفظ اللعبة
-            saveGame();
+            // تحديث المهام
+            updateTasks();
         }
 
-        // عرض رسالة
-        function showMessage(text, type = "success") {
-            messageElement.textContent = text;
-            messageElement.style.borderLeftColor = type === "error" ? "#ef4444" : 
-                                        type === "level" ? "#8b5cf6" : "#2563eb";
-            messageElement.classList.add('show');
+        // إنشاء رابط الدعوة
+        function generateReferralLink() {
+            const gameData = getGameData();
+            return `https://t.me/YourBotName?start=${gameData.referralCode}`;
+        }
+
+        // حساب مضاعف الأدوات
+        function calculateToolMultiplier() {
+            const gameData = getGameData();
+            let multiplier = 1;
+            gameData.tools.forEach(tool => {
+                if (tool.owned) {
+                    multiplier *= tool.multiplier;
+                }
+            });
+            return multiplier;
+        }
+
+        // عرض الترقيات
+        function renderUpgrades() {
+            const upgradesList = document.getElementById('upgradesList');
+            if (!upgradesList) return;
+            
+            upgradesList.innerHTML = '';
+            const gameData = getGameData();
+            
+            gameData.upgrades.forEach(upgrade => {
+                const upgradeItem = document.createElement('div');
+                upgradeItem.className = 'upgrade-item';
+                
+                const upgradeInfo = document.createElement('div');
+                upgradeInfo.className = 'upgrade-info';
+                
+                const upgradeIcon = document.createElement('div');
+                upgradeIcon.className = 'upgrade-icon';
+                upgradeIcon.innerHTML = `<i class="${upgrade.icon}"></i>`;
+                
+                const upgradeDetails = document.createElement('div');
+                upgradeDetails.className = 'upgrade-details';
+                upgradeDetails.innerHTML = `
+                    <h3>${upgrade.name}</h3>
+                    <p>${upgrade.description}</p>
+                `;
+                
+                upgradeInfo.appendChild(upgradeIcon);
+                upgradeInfo.appendChild(upgradeDetails);
+                
+                const upgradeCost = document.createElement('div');
+                upgradeCost.className = 'upgrade-cost';
+                upgradeCost.textContent = `${upgrade.cost} ZST`;
+                
+                const buyBtn = document.createElement('button');
+                buyBtn.className = 'buy-btn';
+                buyBtn.textContent = `شراء (${upgrade.owned})`;
+                buyBtn.disabled = gameData.balance < upgrade.cost;
+                
+                buyBtn.addEventListener('click', () => {
+                    buyUpgrade(upgrade.id);
+                });
+                
+                upgradeItem.appendChild(upgradeInfo);
+                upgradeItem.appendChild(upgradeCost);
+                upgradeItem.appendChild(buyBtn);
+                
+                upgradesList.appendChild(upgradeItem);
+            });
+        }
+
+        // عرض الأدوات
+        function renderTools() {
+            const miningTools = document.getElementById('miningTools');
+            if (!miningTools) return;
+            
+            miningTools.innerHTML = '';
+            const gameData = getGameData();
+            
+            gameData.tools.forEach(tool => {
+                const toolElement = document.createElement('div');
+                toolElement.className = 'upgrade-item';
+                
+                const toolInfo = document.createElement('div');
+                toolInfo.className = 'upgrade-info';
+                
+                const toolIcon = document.createElement('div');
+                toolIcon.className = 'upgrade-icon';
+                toolIcon.innerHTML = `<i class="${tool.icon}"></i>`;
+                
+                const toolDetails = document.createElement('div');
+                toolDetails.className = 'upgrade-details';
+                toolDetails.innerHTML = `
+                    <h3>${tool.name}</h3>
+                    <p>${tool.description}</p>
+                `;
+                
+                toolInfo.appendChild(toolIcon);
+                toolInfo.appendChild(toolDetails);
+                
+                const toolCost = document.createElement('div');
+                toolCost.className = 'upgrade-cost';
+                toolCost.textContent = `${tool.cost} ZST`;
+                
+                const buyBtn = document.createElement('button');
+                buyBtn.className = 'buy-btn';
+                buyBtn.textContent = tool.owned ? 'مملوك' : 'شراء';
+                buyBtn.disabled = tool.owned || gameData.balance < tool.cost;
+                
+                if (!tool.owned) {
+                    buyBtn.addEventListener('click', () => {
+                        buyTool(tool.id);
+                    });
+                }
+                
+                toolElement.appendChild(toolInfo);
+                toolElement.appendChild(toolCost);
+                toolElement.appendChild(buyBtn);
+                
+                miningTools.appendChild(toolElement);
+            });
+        }
+
+        // شراء ترقية
+        function buyUpgrade(upgradeId) {
+            const gameData = getGameData();
+            const upgrade = gameData.upgrades.find(u => u.id === upgradeId);
+            
+            if (gameData.balance >= upgrade.cost) {
+                const newBalance = gameData.balance - upgrade.cost;
+                const upgraded = gameData.upgrades.map(u => 
+                    u.id === upgradeId 
+                        ? { ...u, owned: u.owned + 1, cost: Math.round(u.cost * 1.8) }
+                        : u
+                );
+                
+                updateGameData({
+                    ...gameData,
+                    balance: newBalance,
+                    miningPower: gameData.miningPower + upgrade.power,
+                    autoMiner: gameData.autoMiner + (upgrade.power * 0.01),
+                    upgrades: upgraded
+                });
+                
+                // تحديث المهام
+                const upgradeTask = gameData.tasks.find(t => t.id === 3);
+                if (upgradeTask && !upgradeTask.completed) {
+                    upgradeTask.progress += 1;
+                    if (upgradeTask.progress >= upgradeTask.target) {
+                        upgradeTask.completed = true;
+                        showNotification(`مهمة مكتملة! ربحت ${upgradeTask.reward} ZST`);
+                        updateGameData({
+                            ...gameData,
+                            balance: newBalance + upgradeTask.reward
+                        });
+                    }
+                }
+                
+                updateUI();
+                renderUpgrades();
+                showNotification(`تم شراء ${upgrade.name} بنجاح!`);
+            } else {
+                showNotification("لا تملك عملات كافية لشراء هذه الترقية", "error");
+            }
+        }
+
+        // شراء أداة
+        function buyTool(toolId) {
+            const gameData = getGameData();
+            const tool = gameData.tools.find(t => t.id === toolId);
+            
+            if (gameData.balance >= tool.cost) {
+                const newBalance = gameData.balance - tool.cost;
+                const updatedTools = gameData.tools.map(t => 
+                    t.id === toolId ? { ...t, owned: true } : t
+                );
+                
+                updateGameData({
+                    ...gameData,
+                    balance: newBalance,
+                    tools: updatedTools
+                });
+                
+                updateUI();
+                renderTools();
+                showNotification(`تم شراء ${tool.name} بنجاح!`);
+            } else {
+                showNotification("لا تملك عملات كافية لشراء هذه الأداة", "error");
+            }
+        }
+
+        // عرض المهام
+        function renderTasks() {
+            const tasksGrid = document.getElementById('tasksGrid');
+            if (!tasksGrid) return;
+            
+            tasksGrid.innerHTML = '';
+            const gameData = getGameData();
+            
+            gameData.tasks.forEach(task => {
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card';
+                
+                const taskHeader = document.createElement('div');
+                taskHeader.className = 'task-header';
+                
+                const taskTitle = document.createElement('div');
+                taskTitle.className = 'task-title';
+                taskTitle.textContent = task.name;
+                
+                const taskReward = document.createElement('div');
+                taskReward.className = 'task-reward';
+                taskReward.textContent = `+${task.reward}`;
+                
+                taskHeader.appendChild(taskTitle);
+                taskHeader.appendChild(taskReward);
+                
+                const taskDesc = document.createElement('div');
+                taskDesc.className = 'task-desc';
+                taskDesc.textContent = task.description;
+                
+                const taskProgress = document.createElement('div');
+                taskProgress.className = 'task-progress';
+                
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                const progressPercent = Math.min((task.progress / task.target) * 100, 100);
+                progressBar.style.width = `${progressPercent}%`;
+                
+                taskProgress.appendChild(progressBar);
+                
+                const taskFooter = document.createElement('div');
+                taskFooter.className = 'task-footer';
+                
+                const progressText = document.createElement('div');
+                progressText.className = 'progress-text';
+                progressText.textContent = `${task.progress}/${task.target}`;
+                
+                const claimBtn = document.createElement('button');
+                claimBtn.className = 'task-claim';
+                claimBtn.textContent = task.claimed ? 'مستلم' : (task.completed ? 'استلم الجائزة' : 'قيد التقدم');
+                claimBtn.disabled = !task.completed || task.claimed;
+                
+                if (!task.claimed && task.completed) {
+                    claimBtn.addEventListener('click', () => {
+                        claimTask(task.id);
+                    });
+                }
+                
+                taskFooter.appendChild(progressText);
+                taskFooter.appendChild(claimBtn);
+                
+                taskCard.appendChild(taskHeader);
+                taskCard.appendChild(taskDesc);
+                taskCard.appendChild(taskProgress);
+                taskCard.appendChild(taskFooter);
+                
+                tasksGrid.appendChild(taskCard);
+            });
+        }
+
+        // تحديث المهام
+        function updateTasks() {
+            const gameData = getGameData();
+            
+            // مهمة التعدين
+            const miningTask1 = gameData.tasks.find(t => t.id === 1);
+            const miningTask2 = gameData.tasks.find(t => t.id === 2);
+            const miningTask5 = gameData.tasks.find(t => t.id === 5);
+            
+            if (miningTask1 && !miningTask1.completed) {
+                miningTask1.progress = gameData.balance;
+                if (miningTask1.progress >= miningTask1.target) {
+                    miningTask1.completed = true;
+                }
+            }
+            
+            if (miningTask2 && !miningTask2.completed && miningTask1.completed) {
+                miningTask2.progress = gameData.balance;
+                if (miningTask2.progress >= miningTask2.target) {
+                    miningTask2.completed = true;
+                }
+            }
+            
+            if (miningTask5 && !miningTask5.completed) {
+                miningTask5.progress = gameData.balance;
+                if (miningTask5.progress >= miningTask5.target) {
+                    miningTask5.completed = true;
+                }
+            }
+            
+            // مهمة المستوى
+            const levelTask = gameData.tasks.find(t => t.id === 4);
+            if (levelTask && !levelTask.completed) {
+                levelTask.progress = gameData.level;
+                if (levelTask.progress >= levelTask.target) {
+                    levelTask.completed = true;
+                }
+            }
+            
+            // مهمة الدعوة
+            const inviteTask = gameData.tasks.find(t => t.id === 6);
+            if (inviteTask && !inviteTask.completed) {
+                inviteTask.progress = gameData.invitesCount;
+                if (inviteTask.progress >= inviteTask.target) {
+                    inviteTask.completed = true;
+                }
+            }
+            
+            // تحديث المستوى
+            const newLevel = Math.floor(gameData.balance / gameData.nextLevel) + 1;
+            if (newLevel > gameData.level) {
+                updateGameData({
+                    ...gameData,
+                    level: newLevel,
+                    nextLevel: calculateNextLevelRequirement(newLevel)
+                });
+                showNotification(`تهانينا! لقد وصلت للمستوى ${newLevel}`);
+            }
+            
+            renderTasks();
+        }
+
+        // حساب المطلوب للمستوى التالي
+        function calculateNextLevelRequirement(level) {
+            return Math.floor(1000 * Math.pow(level, 1.5));
+        }
+
+        // استلام مكافأة المهمة
+        function claimTask(taskId) {
+            const gameData = getGameData();
+            const task = gameData.tasks.find(t => t.id === taskId);
+            
+            if (task.completed && !task.claimed) {
+                const newBalance = gameData.balance + task.reward;
+                const updatedTasks = gameData.tasks.map(t => 
+                    t.id === taskId ? { ...t, claimed: true } : t
+                );
+                
+                updateGameData({
+                    ...gameData,
+                    balance: newBalance,
+                    tasks: updatedTasks
+                });
+                
+                showNotification(`مبروك! ربحت ${task.reward} ZST من المهمة`);
+                updateUI();
+                renderTasks();
+            }
+        }
+
+        // التعدين التلقائي
+        function autoMine() {
+            const gameData = getGameData();
+            if (gameData.autoMiner > 0) {
+                const newBalance = gameData.balance + (gameData.autoMiner / 20);
+                updateGameData({
+                    ...gameData,
+                    balance: newBalance
+                });
+                updateUI();
+                
+                // تأثيرات بصرية عشوائية للتعدين التلقائي
+                if (Math.random() > 0.9) {
+                    createCoinEffect();
+                }
+            }
+        }
+
+        // تأثيرات العملات
+        function createCoinEffect() {
+            const mineDisplay = document.getElementById('mineDisplay');
+            if (!mineDisplay) return;
+            
+            const coin = document.createElement('div');
+            coin.className = 'coin';
+            coin.innerHTML = '<i class="fas fa-coins"></i>';
+            
+            const x = Math.random() * (mineDisplay.offsetWidth - 30);
+            const y = Math.random() * (mineDisplay.offsetHeight - 30);
+            
+            coin.style.left = `${x}px`;
+            coin.style.top = `${y}px`;
+            
+            mineDisplay.appendChild(coin);
             
             setTimeout(() => {
-                messageElement.classList.remove('show');
+                coin.remove();
+            }, 1500);
+        }
+
+        // عرض الإشعارات
+        function showNotification(message, type = "success") {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            if (!notification || !notificationText) return;
+            
+            notificationText.textContent = message;
+            notification.className = 'notification';
+            notification.classList.add(type);
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
             }, 3000);
         }
 
-        // عرض مؤشر الحفظ
-        function showSaveIndicator() {
-            saveIndicator.classList.add('show');
+        // محاكاة دعوة صديق
+        function simulateInvite() {
+            const gameData = getGameData();
+            gameData.invitesCount++;
+            const reward = 200;
+            gameData.invitesReward += reward;
+            
+            updateGameData({
+                ...gameData,
+                balance: gameData.balance + reward,
+                invitesCount: gameData.invitesCount,
+                invitesReward: gameData.invitesReward
+            });
+            
+            updateUI();
+            showNotification(`مبروك! لقد حصلت على ${reward} ZST لدعوة صديق جديد!`, "success");
+        }
+
+        // مشاركة على وسائل التواصل
+        function shareOnPlatform(platform) {
+            const link = generateReferralLink();
+            const text = `انضم إلى Zestara - لعبة تعدين العملات الرقمية الممتعة! استخدم رابط الدعوة هذا: ${link}`;
+            
+            let url;
+            switch(platform) {
+                case 'whatsapp':
+                    url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                    break;
+                case 'telegram':
+                    url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+                    break;
+                case 'facebook':
+                    url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`;
+                    break;
+                case 'twitter':
+                    url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                    break;
+                default:
+                    return;
+            }
+            
+            window.open(url, '_blank', 'width=600,height=400');
+            
+            // محاكاة نجاح الدعوة بعد المشاركة
             setTimeout(() => {
-                saveIndicator.classList.remove('show');
+                if (Math.random() > 0.5) {
+                    simulateInvite();
+                }
             }, 2000);
         }
 
-        // حفظ اللعبة
-        function saveGame() {
-            if (!gameState.userId) return;
-
-            // حفظ محلي
-            localStorage.setItem('cryptoMinerGame', JSON.stringify(gameState));
-            
-            // حفظ في Firebase
-            saveUserData();
+        // نسخ رابط الدعوة
+        function copyToClipboard() {
+            const link = generateReferralLink();
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification('تم نسخ رابط الدعوة إلى الحافظة!', 'success');
+            }).catch(() => {
+                // طريقة بديلة للنسخ
+                const textArea = document.createElement('textarea');
+                textArea.value = link;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('تم نسخ رابط الدعوة إلى الحافظة!', 'success');
+            });
         }
 
-        // تحميل اللعبة
-        function loadGame() {
-            loadLocalData();
-            loadUserData();
+        // أحداث الدعوة
+        const inviteBtn = document.getElementById('inviteBtn');
+        const inviteModal = document.getElementById('inviteModal');
+        const closeModal = document.getElementById('closeModal');
+        const copyLink = document.getElementById('copyLink');
+        const socialShareBtns = document.querySelectorAll('.share-btn');
+
+        if (inviteBtn) {
+            inviteBtn.addEventListener('click', () => {
+                if (inviteModal) inviteModal.classList.add('active');
+            });
         }
 
-        // تحميل البيانات المحلية
-        function loadLocalData() {
-            const savedGame = localStorage.getItem('cryptoMinerGame');
-            if (savedGame) {
-                const parsedGame = JSON.parse(savedGame);
-                Object.assign(gameState, parsedGame);
+        if (closeModal) {
+            closeModal.addEventListener('click', () => {
+                if (inviteModal) inviteModal.classList.remove('active');
+            });
+        }
+
+        if (copyLink) {
+            copyLink.addEventListener('click', copyToClipboard);
+        }
+
+        if (socialShareBtns) {
+            socialShareBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const platform = btn.getAttribute('data-platform');
+                    shareOnPlatform(platform);
+                });
+            });
+        }
+
+        // إغلاق النافذة عند النقر خارجها
+        if (inviteModal) {
+            inviteModal.addEventListener('click', (e) => {
+                if (e.target === inviteModal) {
+                    inviteModal.classList.remove('active');
+                }
+            });
+        }
+
+        // أحداث التعدين
+        const mineCore = document.getElementById('mineCore');
+        if (mineCore) {
+            mineCore.addEventListener('click', () => {
+                const gameData = getGameData();
+                const coinsMined = gameData.coinsPerClick * calculateToolMultiplier();
                 
-                // تحديث واجهة المستخدم بعد التحميل
+                updateGameData({
+                    ...gameData,
+                    balance: gameData.balance + coinsMined
+                });
+                
+                // تأثيرات بصرية
+                if (Math.random() > 0.7) {
+                    createCoinEffect();
+                }
+                
+                // تأثير اهتزاز
+                mineCore.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    mineCore.style.transform = 'scale(1)';
+                }, 100);
+                
+                // تحديث الواجهة
                 updateUI();
                 
-                // تحديث الإنجازات
-                updateAchievementsUI();
-                
-                showMessage('تم تحميل اللعبة بنجاح!');
-            }
+                // إشعار عشوائي
+                if (Math.random() > 0.95) {
+                    const messages = [
+                        `تم تعدين ${coinsMined.toFixed(2)} ZST!`,
+                        "عمل رائع! استمر في التعدين!",
+                        "أنت تعدن بسرعة مذهلة!",
+                        "عملاتك في ازدياد مستمر!"
+                    ];
+                    showNotification(messages[Math.floor(Math.random() * messages.length)]);
+                }
+            });
         }
 
-        // تحديث واجهة الإنجازات
-        function updateAchievementsUI() {
-            if (gameState.achievements.first100) {
-                document.getElementById('achievement1').classList.add('unlocked');
-            }
-            if (gameState.achievements.firstMiner) {
-                document.getElementById('achievement2').classList.add('unlocked');
-            }
-            if (gameState.achievements.level10) {
-                document.getElementById('achievement3').classList.add('unlocked');
-            }
-            if (gameState.achievements.tenThousand) {
-                document.getElementById('achievement4').classList.add('unlocked');
-            }
-            if (gameState.achievements.dataCenter) {
-                document.getElementById('achievement5').classList.add('unlocked');
-            }
-            if (gameState.achievements.millionaire) {
-                document.getElementById('achievement6').classList.add('unlocked');
-            }
+        // تهيئة اللعبة
+        function initGame() {
+            updateUI();
+            renderUpgrades();
+            renderTools();
+            renderTasks();
+            
+            // بدء التعدين التلقائي
+            setInterval(autoMine, 1000);
         }
 
-        // بدء اللعبة
-        initGame();
+        // بدء التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            // تهيئة Telegram أولاً
+            if (!initTelegram()) {
+                console.log('التطبيق يعمل في وضع التطوير');
+            }
+            
+            // تهيئة باقي اللعبة
+            initGame();
+        });
+
+        // دالة للحصول على إحصائيات جميع المستخدمين (للوحة الإدارة)
+        function getAllUsersStats() {
+            const users = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('zestara_user_')) {
+                    try {
+                        const userData = JSON.parse(localStorage.getItem(key));
+                        users.push({
+                            telegramId: userData.telegramId,
+                            name: [userData.firstName, userData.lastName].filter(Boolean).join(' '),
+                            username: userData.username,
+                            balance: userData.gameData.balance,
+                            level: userData.gameData.level,
+                            firstLogin: userData.gameData.firstLogin,
+                            lastLogin: userData.gameData.lastLogin
+                        });
+                    } catch (error) {
+                        console.error('خطأ في تحميل بيانات المستخدم:', key, error);
+                    }
+                }
+            }
+            
+            return users;
+        }
+
+        // دالة لتصدير بيانات جميع المستخدمين (لأغراض التحليل)
+        function exportUsersData() {
+            const users = getAllUsersStats();
+            const dataStr = JSON.stringify(users, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `zestara_users_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        // إضافة زر التصدير في وضع التطوير (يمكن إزالته في الإصدار النهائي)
+        if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+            const exportBtn = document.createElement('button');
+            exportBtn.textContent = 'تصدير بيانات المستخدمين';
+            exportBtn.style.position = 'fixed';
+            exportBtn.style.bottom = '10px';
+            exportBtn.style.left = '10px';
+            exportBtn.style.zIndex = '1000';
+            exportBtn.style.padding = '5px 10px';
+            exportBtn.style.background = '#ff006e';
+            exportBtn.style.color = 'white';
+            exportBtn.style.border = 'none';
+            exportBtn.style.borderRadius = '5px';
+            exportBtn.style.cursor = 'pointer';
+            exportBtn.onclick = exportUsersData;
+            document.body.appendChild(exportBtn);
+        }
     </script>
 </body>
 </html>
